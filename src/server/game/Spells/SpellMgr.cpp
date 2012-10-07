@@ -3958,8 +3958,11 @@ void SpellMgr::LoadSpellCustomAttr ()
             count++;
             break;
         case 82327:          // Holy Radiance 
-           spellInfo->EffectRadiusIndex[0] = 10;
-           spellInfo->EffectRadiusIndex[1] = 10;
+			spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ALLY_SRC;
+			spellInfo->EffectImplicitTargetB[1] = TARGET_UNIT_AREA_ALLY_SRC;
+			spellInfo->EffectRadiusIndex[0] = 20;
+			spellInfo->EffectRadiusIndex[1] = 20;
+			spellInfo->EffectRadiusIndex[2] = 20;
            count++;
            break;
         case 44543:          // Fingers of Frost rank 1
