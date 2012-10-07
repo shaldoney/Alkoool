@@ -4024,6 +4024,8 @@ void SpellMgr::LoadSpellCustomAttr ()
             count++;
             break;
             // Bind
+		case 81328: // Brittle bones rank2
+		case 81327: // Brittle bones fragile rank1
         case 3286:
             spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
             spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_TARGET_ENEMY;
