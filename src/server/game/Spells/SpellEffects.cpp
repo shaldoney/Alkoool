@@ -578,6 +578,7 @@ void Spell::SpellDamageSchoolDmg (SpellEffIndex effIndex)
                 if (power > 0)
                 {
                     uint32 bonus_rage = 0;
+					uint32 mod = power > 20 ? 20 : power;
 
                     if (m_caster->HasAura(29723))
                         bonus_rage = 5;
@@ -585,7 +586,7 @@ void Spell::SpellDamageSchoolDmg (SpellEffIndex effIndex)
                         bonus_rage = 10;
 
                     damage += uint32(ap * 0.874 * 100 / 100 - 1);
-                    m_caster->SetPower(POWER_RAGE, 0 + bonus_rage);
+                    m_caster->SetPower(POWER_RAGE, (power - mod) + bonus_rage);
                 }
             }
             // Heroic Strike
