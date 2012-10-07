@@ -3987,6 +3987,14 @@ void SpellMgr::LoadSpellCustomAttr ()
 			spellInfo->EffectTriggerSpell[0] = 85416;
            count++;
            break;
+        case 87163:          // Eternal Glory rank1
+           spellInfo->procChance = 15;
+           count++;
+           break;
+       case 87164:          // Eternal Glory rank2
+           spellInfo->procChance = 30;
+           count++;
+           break;
         case 2643:          // Multi-Shot no-target Effect 0 fix.
             spellInfo->EffectImplicitTargetA[0] = TARGET_DST_TARGET_ENEMY;
             count++;
