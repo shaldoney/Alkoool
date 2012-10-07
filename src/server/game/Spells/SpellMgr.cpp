@@ -4250,6 +4250,11 @@ void SpellMgr::LoadSpellCustomAttr ()
             spellInfo->MaxAffectedTargets = 5;
             count++;
             break;
+        case 53563:          // Beacon of light
+			spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ALLY;
+			spellInfo->EffectTriggerSpell[0] = 53651;
+			count++;
+           break;
         case 40827:          // Sinful Beam
         case 40859:          // Sinister Beam
         case 40860:          // Vile Beam
