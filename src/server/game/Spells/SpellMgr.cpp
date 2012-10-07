@@ -3957,6 +3957,11 @@ void SpellMgr::LoadSpellCustomAttr ()
             spellInfo->EffectRadiusIndex[2] = 14;
             count++;
             break;
+        case 82327:          // Holy Radiance 
+           spellInfo->EffectRadiusIndex[0] = 10;
+           spellInfo->EffectRadiusIndex[1] = 10;
+           count++;
+           break;
         case 44543:          // Fingers of Frost rank 1
             spellInfo->procChance = 7;
             count++;
