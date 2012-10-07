@@ -14163,8 +14163,8 @@ int32 Unit::ModSpellDuration (SpellEntry const* spellProto, Unit const* target, 
             if (spellProto->SpellFamilyFlags[0] & 0x00000002)
             {
                 // Glyph of Blessing of Might
-                if (AuraEffect * aurEff = GetAuraEffect(57958, 0))
-                    duration += aurEff->GetAmount() * MINUTE * IN_MILLISECONDS;
+				if (AuraEffect * aurEff = GetAuraEffect(57958, 0)){}
+                  // duration += aurEff->GetAmount() * MINUTE * IN_MILLISECONDS;
             }
             else if (spellProto->SpellFamilyFlags[0] & 0x00010000)
             {
