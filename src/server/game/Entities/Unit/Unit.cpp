@@ -21,6 +21,7 @@
  */
 
 #include "gamePCH.h"
+#include "AnticheatMgr.h"
 #include "Common.h"
 #include "CreatureAIImpl.h"
 #include "Log.h"
@@ -6809,33 +6810,33 @@ bool Unit::HandleDummyAuraProc (Unit *pVictim, uint32 damage, AuraEffect* trigge
     }
     case SPELLFAMILY_HUNTER:
     {
-        case 2225:
-        // Serpent Spread
+        switch (dummySpell->SpellIconID)
         {
-            // Proc only on multi-shot
-            if (!target || procSpell->Id != 2643)
-                return false;
+            case 2225: // Serpent Spread
+            {
+                // Proc only on multi-shot
+                if (!target || procSpell->Id != 2643)
+                    return false;
 
-            switch (triggerAmount)
-            {
-            case 30:
-            {
-                // Serpent sting 6s duration
-                triggered_spell_id = 88453;
+                switch (triggerAmount)
+                {
+                case 30:
+                {
+                    // Serpent sting 6s duration
+                    triggered_spell_id = 88453;
+                    break;
+                }
+                case 60:
+                {
+                    // Serpent sting 9s duration
+                    triggered_spell_id = 88466;
+                    break;
+                }
+                    break;
+                }
                 break;
             }
-            case 60:
-            {
-                // Serpent sting 9s duration
-                triggered_spell_id = 88466;
-                break;
-            }
-                break;
-            }
-            break;
-        }
-        case 3524:
-        // Marked for Death
+            case 3524: // Marked for Death
         {
             if (!roll_chance_i(triggerAmount))
                 return false;
@@ -6843,31 +6844,6 @@ bool Unit::HandleDummyAuraProc (Unit *pVictim, uint32 damage, AuraEffect* trigge
             triggered_spell_id = 88691;
             target = pVictim;
             break;
-        }
-        // Crouching Tiger, Hidden Chimera
-        if (dummySpell->SpellIconID == 4752)
-        {
-            if (!(dummySpell->procFlags == 0x000202A8))
-                return false;
-            if (ToPlayer()->HasSpellCooldown(dummySpell->Id))
-                return false;
-
-            if (procFlag & PROC_FLAG_TAKEN_MELEE_AUTO_ATTACK || procFlag & PROC_FLAG_TAKEN_SPELL_MELEE_DMG_CLASS)
-            {
-                uint32 seconds = dummySpell->EffectBasePoints[0];
-                ToPlayer()->UpdateSpellCooldown(781, seconds);
-                ToPlayer()->AddSpellCooldown(dummySpell->Id, 0, time(NULL) + 2);
-                return true;
-            }
-
-            if (procFlag & PROC_FLAG_TAKEN_RANGED_AUTO_ATTACK || procFlag & PROC_FLAG_TAKEN_SPELL_RANGED_DMG_CLASS || procFlag & PROC_FLAG_TAKEN_SPELL_MAGIC_DMG_CLASS_NEG)
-            {
-                uint32 seconds = dummySpell->EffectBasePoints[1];
-                ToPlayer()->UpdateSpellCooldown(19263, seconds);
-                ToPlayer()->AddSpellCooldown(dummySpell->Id, 0, time(NULL) + 2);
-                return true;
-            }
-            return false;
         }
         // Thrill of the Hunt
         if (dummySpell->SpellIconID == 2236)
@@ -6978,6 +6954,7 @@ bool Unit::HandleDummyAuraProc (Unit *pVictim, uint32 damage, AuraEffect* trigge
         }
         break;
     }
+  }
     case SPELLFAMILY_PALADIN:
     {
         // Seal of Righteousness - melee proc dummy (addition ${$MWS*(0.011*$AP+0.022*$SPH)} damage)
@@ -8955,18 +8932,63 @@ bool Unit::HandleProcTriggerSpell (Unit *pVictim, uint32 damage, AuraEffect* tri
                 if (!((auraSpellInfo->procFlags & PROC_FLAG_TAKEN_MELEE_AUTO_ATTACK) || (auraSpellInfo->procFlags & PROC_FLAG_TAKEN_SPELL_MELEE_DMG_CLASS)))
                     return false;
 
-                //One With Nature
-                if (AuraEffect* aurEff = ToPlayer()->GetDummyAuraEffect(SPELLFAMILY_HUNTER, 5080, 1))
-                {
-                    SpellEntry const* spellproto = aurEff->GetSpellProto();
-                    basepoints = spellproto->EffectBasePoints[1];
-                }
-
                 target = this;
-                basepoints0 = auraSpellInfo->EffectBasePoints[0] + basepoints;
+                basepoints0 = auraSpellInfo->EffectBasePoints [0];
+                    if (AuraEffect* aurEff = GetAuraEffect(SPELL_AURA_DUMMY,SPELLFAMILY_HUNTER,5080,1)) // One With Nature
+                        basepoints0 += aurEff->GetAmount();
                 trigger_spell_id = 82716;
                 break;
             }
+                if (auraSpellInfo->SpellIconID == 4752) // Crouching Tiger, Hidden Chimera
+                {
+                    if (Player* plr = ToPlayer())
+                    {
+                        if (cooldown && plr->HasSpellCooldown(auraSpellInfo->Id))
+                            return false;
+
+                        if (plr->HasSpellCooldown(781)) // Disengage 781
+                        {
+                            int32 baseValue0 = auraSpellInfo->EffectBasePoints[0]  / IN_MILLISECONDS;
+                            int32 disengageCD = plr->GetSpellCooldownDelay(781);
+
+                            if (disengageCD < baseValue0)
+                                disengageCD = 0;
+                            else
+                                disengageCD -= baseValue0;
+
+                            plr->AddSpellCooldown(781, 0, time(NULL) + disengageCD);
+
+                            WorldPacket data(SMSG_MODIFY_COOLDOWN, 4+8+4);
+                            data << uint32(781);                            // Spell ID
+                            data << uint64(GetGUID());                      // Player GUID
+                            data << int32(-baseValue0 * IN_MILLISECONDS);   // Cooldown mod in milliseconds
+                            plr->GetSession()->SendPacket(&data);
+                        }
+
+                        if (plr->HasSpellCooldown(19263)) // Deterrence 19263
+                        {
+                            int32 baseValue1 = auraSpellInfo->EffectBasePoints[1]  / IN_MILLISECONDS;
+                            int32 deterrenceCD = plr->GetSpellCooldownDelay(19263);
+
+                            if (deterrenceCD < baseValue1)
+                                deterrenceCD = 0;
+                            else
+                                deterrenceCD -= baseValue1;
+
+                            plr->AddSpellCooldown(19263, 0, time(NULL) + deterrenceCD);
+
+                            WorldPacket data(SMSG_MODIFY_COOLDOWN, 4+8+4);
+                            data << uint32(19263);                          // Spell ID
+                            data << uint64(GetGUID());                      // Player GUID
+                            data << int32(-baseValue1 * IN_MILLISECONDS);   // Cooldown mod in milliseconds
+                        }
+
+                        if (cooldown)
+                            plr->AddSpellCooldown(auraSpellInfo->Id, 0, time(NULL) + cooldown);
+
+                        return true;
+                    }
+                }
             break;
         }
         case SPELLFAMILY_PALADIN:
@@ -13465,6 +13487,9 @@ void Unit::SetVisible (bool x)
 
 void Unit::UpdateSpeed (UnitMoveType mtype, bool forced)
 {
+    if (this->ToPlayer())
+        sAnticheatMgr->DisableAnticheatDetection(this->ToPlayer());
+        
     int32 main_speed_mod = 0;
     float stack_bonus = 1.0f;
     float non_stack_bonus = 1.0f;
@@ -17563,6 +17588,9 @@ void Unit::UpdateObjectVisibility (bool forced)
 
 void Unit::KnockbackFrom (float x, float y, float speedXY, float speedZ)
 {
+    if (this->ToPlayer())
+        sAnticheatMgr->DisableAnticheatDetection(this->ToPlayer());
+    
     Player *player = NULL;
     if (GetTypeId() == TYPEID_PLAYER)
         player = (Player*) this;
