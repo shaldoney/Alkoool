@@ -947,12 +947,15 @@ bool Guardian::InitStatsForLevel (uint8 petlevel)
     }
     case HUNTER_PET:
     {
+		int32 bonus_dmg = (int32(m_owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.6));
+		SetBonusDamage (int32(m_owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.6));
+
         SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, uint32(sObjectMgr->GetXPForLevel(petlevel) * PET_XP_FACTOR));
         //these formula may not be correct; however, it is designed to be close to what it should be
         //this makes dps 0.5 of pets level
-        SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(petlevel - (petlevel / 4)));          //damage range is then petlevel / 2
+        SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float((petlevel - (petlevel / 4) + bonus_dmg)));          //damage range is then petlevel / 2
         //damage range is then petlevel / 2
-        SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(petlevel + (petlevel / 4)));
+        SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float((petlevel + (petlevel / 4) + bonus_dmg)));
         //damage is increased afterwards as strength and pet scaling modify attack power
         SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, float(m_owner->GetArmor()) * 0.7f);          //  Bonus Armor (70% of player armor)
         break;
