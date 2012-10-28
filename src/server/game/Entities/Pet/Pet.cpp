@@ -947,9 +947,8 @@ bool Guardian::InitStatsForLevel (uint8 petlevel)
     }
     case HUNTER_PET:
     {
-		int32 bonus_dmg = (int32(m_owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.6));
+		int32 bonus_dmg = (int32(m_owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.5));
 		SetBonusDamage (int32(m_owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.6));
-
         SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, uint32(sObjectMgr->GetXPForLevel(petlevel) * PET_XP_FACTOR));
         //these formula may not be correct; however, it is designed to be close to what it should be
         //this makes dps 0.5 of pets level
