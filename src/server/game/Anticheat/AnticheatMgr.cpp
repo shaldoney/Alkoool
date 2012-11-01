@@ -94,10 +94,10 @@ void AnticheatMgr::BuildReport(Player* player,uint8 reportType)
         {
         player->TeleportTo(1, 16220.7f, 16398.3f, -64.3786f, 0.825313f);
         player->SetMovement(MOVE_ROOT);
-        player->CastSpell(player, 42201, true);
-        player->CastSpell(player, 23775, true);
-        player->CastSpell(player, 9454, true);
-		player->CastSpell(player, 45472, true); // parachute
+        player->CastSpell(player, 42201, true);  // Eternal Silence
+        player->CastSpell(player, 23775, true);  // Stun Forever
+        player->CastSpell(player, 9454, true);   // Freeze
+		player->CastSpell(player, 45472, true);  // parachute
 		//player->ResurrectPlayer(100, false);
 
         ChatHandler(player->GetSession()).PSendSysMessage("You Have Been Jailed By: The Anti Cheater System.");
@@ -190,6 +190,9 @@ void AnticheatMgr::FlyHackDetection(Player* player, MovementInfo movementInfo)
     if (
         player->HasAura(34480) || // GRAVITY_LAPSE
         player->HasAura(39432) || // GRAVITY_LAPSE_AURA
+        player->HasAura(33943) || // Flight Form
+        player->HasAura(40120) || // Swift Flight Form
+        player->HasAura(73446) || // The Pride Of Kezan: Flight Speed Aura
         player->HasAura(44227) // GRAVITY_LAPSE_FLY
         )
         return;        
@@ -266,12 +269,13 @@ void AnticheatMgr::SpeedHackDetection(Player* player,MovementInfo movementInfo)
         return;
 	if (player->IsFalling() && player->GetMapId() == 607) //False segnalation in SOTA
         return;
-    /* 
-   if (player->IsFalling())
-        return;    
+     
+    if (player->IsFalling())
+        return;  
+        
     if (player->HasAuraType(SPELL_AURA_FEATHER_FALL) || player->HasAuraType(SPELL_AURA_SAFE_FALL))
         return;
-    */
+    
         
     uint32 distance2D = (uint32)movementInfo.pos.GetExactDist2d(&player->anticheatData.lastMovementInfo.pos);
     uint8 moveType = 0;
@@ -296,6 +300,7 @@ void AnticheatMgr::SpeedHackDetection(Player* player,MovementInfo movementInfo)
         player->HasAura(64731) || // 64731 -> Sea Turtle
         player->HasAura(7840)  || // 7840 -> Swim Speed
         player->HasAura(88026) || // 88026 -> Silversnap Swim Tonic Master
+        player->HasAura(75627) || // 75627 -> Speedbarge Diving Helm
         player->HasAura(30430)    // 30430 -> Embrace of the Serpent
         // this isnt good, need way to work out speed of these auras instead of just skipping ppl with them.
         )
@@ -305,13 +310,21 @@ void AnticheatMgr::SpeedHackDetection(Player* player,MovementInfo movementInfo)
     if (moveType == MOVE_RUN)
     {
         if (
-        player->HasAura(2645)  ||   // 2645 -> Ghost Worlf
+        player->HasAura(2645)  ||  // 2645 -> Ghost Worlf
         player->HasAura(17002) ||  // 17002 -> Feral Swiftness 1
         player->HasAura(24866) ||  // 24866 -> Feral Swiftness 2
         player->HasAura(32223) ||  // 32223 -> Crusader Aura < do we need this????
         player->HasAura(13141) ||  // 13141 -> Gnomish Rocket Boots
         player->HasAura(8892)  ||  // 8892 -> Goblin Rocket Boots
         player->HasAura(51721) ||  // 51721 -> Dominion Over Acherus
+        player->HasAura(51721) ||  // 51721 -> Rocket Jump
+        player->HasAura(68992) ||  // 68992 -> Darkflight
+        player->HasAura(1850)  ||  // 1850 -> Dash
+        player->HasAura(5215)  ||  // 5215 -> Prowl (Cat Form)  // seems to trigger false positive???
+        player->HasAura(2983)  ||  // 2983 -> Sprint
+        player->HasAura(68212) ||  // 68212 -> Weed Whacker
+        player->HasAura(75627) ||  // 75627 -> Speedbarge Diving Helm
+        player->HasAura(40120) ||  // 40120 -> Swift Flight Form  // do we need this here?? 
         player->HasAura(87840)     // 87840 -> Running Wild
         // this isnt good, need way to work out speed of these auras instead of just skipping ppl with them.
         )
