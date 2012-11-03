@@ -835,6 +835,9 @@ void Spell::SpellDamageSchoolDmg (SpellEffIndex effIndex)
                     }
                 }
             }
+
+			else if (m_spellInfo->Id == 6807)
+               damage = uint32(8 + m_caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.24 - 1);
             // Wrath
             else if (m_spellInfo->SpellFamilyFlags[0] & 0x00000001)
             {
@@ -923,7 +926,24 @@ void Spell::SpellDamageSchoolDmg (SpellEffIndex effIndex)
                 if (uint32 combo = ((Player*) m_caster)->GetComboPoints())
                 {
                     float ap = m_caster->GetTotalAttackPowerValue(BASE_ATTACK);
-                    damage += int32(ap * combo * 0.091f);
+
+					switch(combo){
+					case 1:
+						 damage += int32(ap * combo * 0.091f);
+						break;
+					case 2:
+						 damage += int32(ap * combo * 0.182f);
+						break;
+					case 3:
+						 damage += int32(ap * combo * 0.273f);
+						break;
+					case 4:
+						 damage += int32(ap * combo * 0.364f);
+						break;
+					case 5:
+						 damage += int32(ap * combo * 0.455f);
+						break;
+					}
 
                     // Eviscerate and Envenom Bonus Damage (item set effect)
                     if (m_caster->HasAura(37169))
@@ -933,13 +953,47 @@ void Spell::SpellDamageSchoolDmg (SpellEffIndex effIndex)
             break;
         }
         case SPELLFAMILY_HUNTER:
-        {          // Rapid Recuperation
+			{
+			switch (m_spellInfo->Id)
+               {    // PETS BASIC ATTACK
+                   case 17253: // Bite +($RAP*0.40)*0.20)} 
+                   case 49966: // Smack
+                   case 53508: // Wolverine Bite
+
+                       damage += int32((m_caster->GetOwner()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.40)*0.20);
+                       break;
+ 
+               }
+
+			}
+			//Kill command
+			if (m_spellInfo->Id == 83381){
+				if (m_caster->isPet()){
+
+					if (Unit *owner = m_caster->GetOwner()){
+						damage += owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.516;
+					}
+				}
+			}
+           // Rapid Recuperation
+			{
             if (m_caster->HasAura(3045))
                 if (m_caster->HasAura(53228))          // Rank 1
                     m_caster->CastSpell(m_caster, 53230, true);
                 else if (m_caster->HasAura(53232))          // Rank 2
                     m_caster->CastSpell(m_caster, 54227, true);
 
+			//Claw
+			if (m_spellInfo->Id == 16827){
+
+				if (m_caster->isPet()){
+
+					if (Unit *owner = m_caster->GetOwner()){
+
+						damage += int32((m_caster->GetOwner()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.40)*0.20);
+					}
+				}
+			}
             //Gore
             if (m_spellInfo->SpellIconID == 1578)
             {
