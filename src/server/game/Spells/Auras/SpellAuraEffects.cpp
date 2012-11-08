@@ -821,6 +821,12 @@ int32 AuraEffect::CalculateAmount (Unit *caster)
         // Vampiric Blood
         if (GetId() == 55233)
             amount = GetBase()->GetUnitOwner()->CountPctFromMaxHealth(amount);
+         // Last Stand Warrior
+        if (GetId() == 12976)
+            amount = GetBase()->GetUnitOwner()->CountPctFromMaxHealth(30);
+        // Last Stand Hunter
+        if (GetId() == 53478)
+            amount = GetBase()->GetUnitOwner()->CountPctFromMaxHealth(30);
         break;
     case SPELL_AURA_MOD_INCREASE_ENERGY:
         // Hymn of Hope
@@ -2202,11 +2208,11 @@ void AuraEffect::PeriodicDummyTick (Unit *target, Unit *caster) const
             {
                 if (target->IsWithinDist(obj, GetSpellMaxRange(48020, true)))
                 {
-                    if (!target->HasAura(48018))
-                        target->CastSpell(target, 48018, true);
+                     if (!target->HasAura(62388))
+                        target->SendAuraVisualForSelf(true,62388, 1);
                 }
                 else
-                    target->RemoveAura(48018);
+                    target->SendAuraVisualForSelf(false,62388);
             }
             break;
         }
@@ -2812,7 +2818,8 @@ void AuraEffect::HandleShapeshiftBoosts (Unit *target, bool apply) const
         HotWSpellId = 24900;
         break;
     case FORM_TREE:
-        spellId = 34123;
+        spellId = 52553;
+        spellId2 = 5420;
         break;
     case FORM_TRAVEL:
         spellId = 5419;
