@@ -972,6 +972,16 @@ void Spell::SpellDamageSchoolDmg (SpellEffIndex effIndex)
 
 					if (Unit *owner = m_caster->GetOwner()){
 						damage += owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.516;
+
+						// Kill command amelioré rank1
+						if( owner->HasAura(35029)){
+							damage += int(damage*0.05);
+						}
+						// Kill command amelioré rank2
+						if( owner->HasAura(35030)){
+							damage += int(10000);
+						}
+
 					}
 				}
 			}
@@ -989,8 +999,8 @@ void Spell::SpellDamageSchoolDmg (SpellEffIndex effIndex)
 				if (m_caster->isPet()){
 
 					if (Unit *owner = m_caster->GetOwner()){
-
-						damage += int32((m_caster->GetOwner()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.40)*0.20);
+						
+						damage += int32(m_caster->GetTotalAttackPowerValue(BASE_ATTACK)*0.4 + (m_caster->GetOwner()->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.40)*0.20);
 					}
 				}
 			}
@@ -1974,6 +1984,7 @@ void Spell::EffectDummy (SpellEffIndex effIndex)
         }
         switch (m_spellInfo->Id)
         {
+
         case 19028:          // Soul Link
             if (m_caster->GetTypeId() == TYPEID_PLAYER)
                 if (Pet* pet = m_caster->ToPlayer()->GetPet())
