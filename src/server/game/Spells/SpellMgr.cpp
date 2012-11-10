@@ -4047,14 +4047,24 @@ void SpellMgr::LoadSpellCustomAttr ()
 			spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ALLY_SRC;
 			spellInfo->EffectRadiusIndex[0] = 9;
 			spellInfo->EffectRadiusMaxIndex[0] =9;
-
            count++;
            break;
         case 82327:          // Holy Radiance 
 			spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_CASTER;
 			spellInfo->EffectTriggerSpell[0] = 86452;
 			spellInfo->EffectRadiusIndex[0] = 13;
-
+           count++;
+           break;
+		 case 54785: // demonic jump
+			spellInfo->Stances = 1 << (FORM_METAMORPHOSIS - 1);
+           count++;
+           break; 
+		 case 50589: // Immo
+           spellInfo->SpellFamilyFlags[1] = 0x20000020;
+           count++;
+           break;
+		 case 16689: // nature's grasp
+			spellInfo->Stances = 1 << (FORM_CAT - 1);
            count++;
            break;
         case 44543:          // Fingers of Frost rank 1
