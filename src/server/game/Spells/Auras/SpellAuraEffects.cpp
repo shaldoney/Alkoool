@@ -3502,7 +3502,7 @@ void AuraEffect::HandleAuraModShapeshift (AuraApplication const *aurApp, uint8 m
             if (form == FORM_DEFENSIVESTANCE)
             {
                 if (AuraEffect const * aurEff = target->IsScriptOverriden(m_spellProto, 831))
-                    Rage_val += aurEff->GetAmount() * 10;
+                    Rage_val += CalculatePctN(aurEff->GetAmount(), target->GetPower(POWER_RAGE));
             }
             // Stance mastery + Tactical mastery (both passive, and last have aura only in defense stance, but need apply at any stance switch)
             if (target->GetTypeId() == TYPEID_PLAYER)

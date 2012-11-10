@@ -52,7 +52,10 @@ enum MovementGeneratorType
     ASSISTANCE_MOTION_TYPE = 11,          // PointMovementGenerator.h (first part of flee for assistance)
     ASSISTANCE_DISTRACT_MOTION_TYPE = 12,          // IdleMovementGenerator.h (second part of flee for assistance)
     TIMED_FLEEING_MOTION_TYPE = 13,          // FleeingMovementGenerator.h (alt.second part of flee for assistance)
-    ROTATE_MOTION_TYPE = 14, NULL_MOTION_TYPE = 15,
+    FOLLOW_MOTION_TYPE    = 14,
+    ROTATE_MOTION_TYPE    = 15,
+    EFFECT_MOTION_TYPE    = 16,
+    NULL_MOTION_TYPE      = 17,
 };
 
 enum MovementSlot

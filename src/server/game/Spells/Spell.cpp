@@ -3830,7 +3830,7 @@ void Spell::update (uint32 difftime)
     if ((m_caster->GetTypeId() == TYPEID_PLAYER && m_timer != 0) && m_caster->isMoving() && (m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT) && (m_spellInfo->Effect[0] != SPELL_EFFECT_STUCK || !m_caster->HasUnitMovementFlag(MOVEMENTFLAG_FALLING)))
     {
         // don't cancel for melee, autorepeat, triggered and instant spells
-        if (!IsNextMeleeSwingSpell() && !IsAutoRepeat() && !m_IsTriggeredSpell && !m_caster->CanCastWhileWalking(m_spellInfo))
+        if (!IsNextMeleeSwingSpell() && !IsAutoRepeat() && !m_IsTriggeredSpell && !m_caster->CanCastWhileWalking(m_spellInfo));
             cancel();
     }
 

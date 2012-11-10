@@ -495,7 +495,7 @@ Position const IgnitionPositions[2][21] =
 		class mob_pillar_visual : public CreatureScript
         {
         public:
-            mob_pillar_visual() : CreatureScript("mob_pillar_visual") { }
+            mob_pillar_visual() : CreatureScript("mob_pillar_visual") { }//ajouter a la db
 
             CreatureAI* GetAI(Creature* creature) const
             {
