@@ -841,7 +841,7 @@ bool Aura::CanBeSaved () const
 
 bool Aura::IsVisible () const
 {
-    return !IsPassive() || HasAreaAuraEffect(GetSpellProto()) || HasEffectType(SPELL_AURA_ABILITY_IGNORE_AURASTATE);
+    return !IsPassive() || HasAreaAuraEffect(GetSpellProto()) || HasEffectType(SPELL_AURA_ABILITY_IGNORE_AURASTATE)|| HasEffectType(SPELL_AURA_CAST_WHILE_WALKING);
 }
 
 void Aura::UnregisterSingleTarget ()
@@ -1147,6 +1147,27 @@ void Aura::HandleAuraSpecificMods (AuraApplication const* aurApp, Unit* caster, 
         case SPELLFAMILY_PRIEST:
             if (!caster)
                 break;
+                switch (GetId())
+               {
+                   case 528: // Cure Disease
+                   {
+                       // Body and Soul
+                       if (caster->HasAura(64127) || caster->HasAura(64129))
+                           if (target == caster)
+                               caster->CastSpell(target, 64136, true, NULL, NULL, GetCasterGUID());
+                       break;
+                   }
+                   case 17: // Power Word: Shield
+                   case 73325: // Leap of Faith
+                   {
+                       // Body and Soul
+                       if (caster->HasAura(64127))
+                           caster->CastSpell(target, 64128, true, NULL, GetEffect(0), GetCasterGUID());
+                       else if (caster->HasAura(64129))
+                           caster->CastSpell(target, 65081, true, NULL, GetEffect(0), GetCasterGUID());
+                       break;
+                   }
+               }
             // Devouring Plague
             if (GetId() == 2944)
             {
@@ -1382,23 +1403,19 @@ void Aura::HandleAuraSpecificMods (AuraApplication const* aurApp, Unit* caster, 
                 if (target->HasAura(70752))          //Item - Mage T10 2P Bonus
                     target->CastSpell(target, 70753, true);
                 break;
+             case 11426:		// Ice Barrier
+                   {
+                    if (!caster)
+                        break;
+                    if (removeMode == AURA_REMOVE_BY_ENEMY_SPELL)
+                        if (caster->HasAura(44745)) // Shattered Barrier, Rank 1
+                            caster->CastSpell(caster, 55080, true, NULL, GetEffect(0), GetCasterGUID());
+                        else if (caster->HasAura(54787)) // Shattered Barrier, Rank 2
+                            caster->CastSpell(caster, 83073, true, NULL, GetEffect(0), GetCasterGUID());
+                    break;
+                   }
             default:
                 break;
-            }
-            if (!caster)
-                break;
-            // Ice barrier - dispel/absorb remove
-            if (removeMode == AURA_REMOVE_BY_ENEMY_SPELL && GetSpellProto()->SpellFamilyFlags[1] & 0x1)
-            {
-                // Shattered Barrier
-                if (target->HasAura(44745))
-                {
-                    caster->CastSpell(target, 55080, true);
-                }
-                if (target->HasAura(54787))
-                {
-                    caster->CastSpell(target, 83073, true);
-                }
             }
             break;
         case SPELLFAMILY_WARRIOR:
