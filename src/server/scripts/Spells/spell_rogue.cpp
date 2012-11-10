@@ -397,6 +397,39 @@ public:
     }
 };
 
+
+class spell_rog_redirect : public SpellScriptLoader
+{
+   public:
+       spell_rog_redirect() : SpellScriptLoader("spell_rog_redirect") { }
+
+       class spell_rog_redirect_SpellScript : public SpellScript
+       {
+           PrepareSpellScript(spell_rog_redirect_SpellScript)
+
+           void HandleRedirect(SpellEffIndex /*effIndex*/)
+           {
+               if(Player* caster = GetCaster()->m_movedPlayer)
+               {
+                   if (Unit* unitTarget = GetHitUnit())
+                   {
+                       if (caster->GetComboPoints() > 0 && caster->GetComboTarget())
+                           caster->AddComboPoints(unitTarget, caster->GetComboPoints());
+                   }
+               }
+           }
+
+           void Register()
+           {
+               OnEffectHitTarget += SpellEffectFn(spell_rog_redirect_SpellScript::HandleRedirect, EFFECT_0, SPELL_EFFECT_ADD_COMBO_POINTS);
+           }
+       };
+
+       SpellScript* GetSpellScript() const
+       {
+           return new spell_rog_redirect_SpellScript();
+       }
+};
 void AddSC_rogue_spell_scripts ()
 {
     new spell_rog_cheat_death();
@@ -405,4 +438,5 @@ void AddSC_rogue_spell_scripts ()
     new spell_rog_prey_on_the_weak();
     new spell_rog_shiv();
     new spell_rog_deadly_poison();
+	new spell_rog_redirect();
 }
