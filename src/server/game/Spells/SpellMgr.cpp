@@ -3948,60 +3948,88 @@ void SpellMgr::LoadSpellCustomAttr ()
             spellInfo->Effect[1] = 0;
             count++;
             break;
-			case 77612: //Modulation
-			case 92451:
-			case 92452:
-			case 92453:
-				spellInfo->EffectRadiusIndex[0] = 28;
-				spellInfo->EffectRadiusIndex[1] = 28;
-				spellInfo->EffectRadiusIndex[2] = 28;
-				count++;
-				break;
-		   
-		    case 86170: //Furious Roar
-			case 83710:
-			case 86169:
-			case 86171:
-				spellInfo->EffectRadiusIndex[0] = 28;
-				spellInfo->EffectRadiusIndex[1] = 28;
-				spellInfo->EffectRadiusIndex[2] = 28;
-				count++;
-			break;
-		   
-			case 86840:
+
+		case 77612:			//Modulation
+		case 92451:
+		case 92452:
+		case 92453:
+		case 86170:			//Furious Roar
+		case 83710:
+		case 86169:			//Rugissement furieux
+		case 86171:
+		case 86840:			//Flemmes devorantes
+		case 79505:			//Lance flemmes
+		case 91531:
+		case 91532:
+		case 91533:
+		case 79023:			//Mesure de securité
+		case 91519:
+		case 91520:
+		case 91521:
+		case 91523:
+		case 91524:
+		case 91525:
+		case 82890:			//Mortalité
+
 				spellInfo->EffectRadiusIndex[0] = 28;
 				spellInfo->EffectRadiusIndex[1] = 28;
 				spellInfo->EffectRadiusIndex[2] = 28;
 				count++;
 			break;
 			
-			case 76355:
-			case 89879:
+		case 76355:
+		case 89879:
 				spellInfo->EffectRadiusIndex[0] = 9;
 				spellInfo->EffectRadiusIndex[1] = 9;
 				spellInfo->EffectRadiusIndex[2] = 9;
 				count++;
 			break;
 			
-			case 79505:
-			case 91531:
-			case 91532:
-			case 91533:
-				spellInfo->EffectRadiusIndex[0] = 28;
-				spellInfo->EffectRadiusIndex[1] = 28;
-				spellInfo->EffectRadiusIndex[2] = 28;
+
+		case 82935:			// Gelée glaustique
+				spellInfo->EffectRadiusIndex[0] = 29;
+				spellInfo->EffectRadiusIndex[1] = 29;
 				count++;
-			break;
-			
-			case 79023:
-			case 91519:
-			case 91520:
-			case 91521:
-				spellInfo->EffectRadiusIndex[0] = 28;
-				spellInfo->EffectRadiusIndex[1] = 28;
-				spellInfo->EffectRadiusIndex[2] = 28;
+			break;		
+		case 91536:			//Lance flemmes
+		case 91537:
+				spellInfo->EffectRadiusIndex[0] = 12;
+				spellInfo->EffectRadiusIndex[1] = 12;
 				count++;
 			break;			
+ 
+		case 23858:			//Nova sacrée (abilité)
+				spellInfo->EffectImplicitTargetA[0] = TARGET_SRC_CASTER;
+				spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ENEMY_SRC;
+				spellInfo->EffectRadiusIndex[0] = 18;
+				spellInfo->EffectImplicitTargetA[1] = TARGET_SRC_CASTER;
+				spellInfo->EffectImplicitTargetB[1] = TARGET_UNIT_AREA_ALLY_SRC;
+				spellInfo->EffectRadiusIndex[0] = 18;
+				spellInfo->MaxAffectedTargets = 5;
+				count++;
+			break;	
+		case 23455:			//Nova sacrée
+				spellInfo->EffectImplicitTargetA[0] = TARGET_SRC_CASTER;
+				spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ALLY_SRC;
+				spellInfo->EffectRadiusIndex[0] = 13;
+				spellInfo->EffectRadiusMaxIndex[0] = 13;
+				spellInfo->MaxAffectedTargets = 5;
+				count++;
+			break;	
+
+		case 15237:			//Nova sacrée
+				spellInfo->EffectImplicitTargetA[0] = TARGET_SRC_CASTER;
+				spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ENEMY_SRC;
+				spellInfo->EffectRadiusIndex[0] = 13;
+				spellInfo->EffectRadiusMaxIndex[0] = 13;
+				spellInfo->MaxAffectedTargets = 5;
+				count++;
+			break;		
+		case 82848:			//Massacre
+				spellInfo->EffectRadiusIndex[0] = 28;
+				spellInfo->EffectRadiusMaxIndex[0] = 28;
+				count++;
+			break;		
         case 1680:          // Whirlwind  (Fury)
             spellInfo->EffectRadiusIndex[0] = 14;
             spellInfo->EffectRadiusIndex[1] = 14;
@@ -4014,12 +4042,19 @@ void SpellMgr::LoadSpellCustomAttr ()
             spellInfo->EffectRadiusIndex[2] = 14;
             count++;
             break;
-        case 82327:          // Holy Radiance 
+			
+        case 86452:          // Radiance sacrée
 			spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ALLY_SRC;
-			spellInfo->EffectImplicitTargetB[1] = TARGET_UNIT_AREA_ALLY_SRC;
-			spellInfo->EffectRadiusIndex[0] = 20;
-			spellInfo->EffectRadiusIndex[1] = 20;
-			spellInfo->EffectRadiusIndex[2] = 20;
+			spellInfo->EffectRadiusIndex[0] = 9;
+			spellInfo->EffectRadiusMaxIndex[0] =9;
+
+           count++;
+           break;
+        case 82327:          // Holy Radiance 
+			spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_CASTER;
+			spellInfo->EffectTriggerSpell[0] = 86452;
+			spellInfo->EffectRadiusIndex[0] = 13;
+
            count++;
            break;
         case 44543:          // Fingers of Frost rank 1
@@ -4094,15 +4129,6 @@ void SpellMgr::LoadSpellCustomAttr ()
             count++;
             break;
             // Holy Radiance
-        case 86452:
-            spellInfo->EffectRadiusIndex[0] = 9;
-            count++;
-            break;
-			// Holy Nova
-        case 15237:
-            spellInfo->EffectRadiusIndex[0] = 13;	
-             count++;	
-             break; 
         case 8494:          // Mana Shield (rank 2)
             // because of bug in dbc
             spellInfo->procChance = 0;
