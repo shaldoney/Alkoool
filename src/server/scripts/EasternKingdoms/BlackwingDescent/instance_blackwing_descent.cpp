@@ -343,11 +343,6 @@ public:
             if ((player->GetSession()->GetSecurity() > SEC_GAMEMASTER ))
                 return true;
 
-            switch (bossId)
-            {
-
-            }
-
             return true;
        } 
 
