@@ -173,6 +173,9 @@ public:
                         return;
 
                 me->SetMaxHealth(trons[0]->GetMaxHealth());
+				me->SetReactState(REACT_PASSIVE);
+				me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE | UNIT_FLAG_PASSIVE | UNIT_FLAG_DISABLE_MOVE);
+				me->setFaction(14);
 
                 eventActive = true;
                 intialized = true;
@@ -224,6 +227,7 @@ public:
                 events.ScheduleEvent(EVENT_ACTIVATE_NEXT_CONSTRUCT, 45000);
                 events.ScheduleEvent(EVENT_UPDATE_HEALTH, 1000);
 				me->MonsterYell(SAY_AGGRO, 0, 0);
+
                 break;
 
             case ACTION_OMNOTRON_RESET:
