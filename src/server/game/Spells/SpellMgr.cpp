@@ -3962,13 +3962,6 @@ void SpellMgr::LoadSpellCustomAttr ()
 		case 91531:
 		case 91532:
 		case 91533:
-		case 79023:			//Mesure de securité
-		case 91519:
-		case 91520:
-		case 91521:
-		case 91523:
-		case 91524:
-		case 91525:
 		case 82890:			//Mortalité
 
 				spellInfo->EffectRadiusIndex[0] = 28;
@@ -3985,19 +3978,61 @@ void SpellMgr::LoadSpellCustomAttr ()
 				count++;
 			break;
 			
-
+		//Descente d'aile noir
 		case 82935:			// Gelée glaustique
 				spellInfo->EffectRadiusIndex[0] = 29;
 				spellInfo->EffectRadiusIndex[1] = 29;
 				count++;
-			break;		
-		case 91536:			//Lance flemmes
-		case 91537:
-				spellInfo->EffectRadiusIndex[0] = 12;
+			break;
+
+		case 91858:			//Générateur de puissance surchargé trigger
+				spellInfo->EffectRadiusIndex[0] = 8;
+				spellInfo->EffectImplicitTargetA[0] = TARGET_DST_CASTER;
+				spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ENTRY_DST;
+				spellInfo->EffectRadiusMaxIndex[0] = 12;
+				spellInfo->EffectImplicitTargetA[1] = TARGET_DST_CASTER;
+				spellInfo->EffectImplicitTargetB[1] = TARGET_UNIT_AREA_ENTRY_DST;
+				spellInfo->EffectRadiusMaxIndex[1] = 12;
 				spellInfo->EffectRadiusIndex[1] = 12;
 				count++;
-			break;			
- 
+            break;
+
+		case 91857:			//Générateur de puissance surchargé
+				spellInfo->DurationIndex = 60;
+				count++;
+
+		case 79710:			//Annihilateur arcanique : peut etre interrompu
+		case 91541: 
+		case 91542: 
+		case 91540: 
+				spellInfo->InterruptFlags = SPELL_INTERRUPT_FLAG_INTERRUPT;
+				spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
+				count++;
+            break;
+
+		case 79035:			//Mesure de securité
+		case 91523:
+		case 91524:
+		case 91525:
+				spellInfo->EffectRadiusIndex[0] = 28;
+				spellInfo->EffectImplicitTargetA[0] = TARGET_SRC_CASTER;
+				spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ENEMY_SRC;
+				count++;
+			break;
+
+		case 79504:			//Lance flammes
+		case 31535: 
+		case 91536:			
+		case 91537:
+				spellInfo->EffectRadiusIndex[0] = 12;
+				spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_AREA_PATH;;
+				count++;
+			break;	
+		case 80157:			//Bombe chimique
+				spellInfo->EffectRadiusIndex[0] = 15;
+				count++;
+			break;	
+
 		case 23858:			//Nova sacrée (abilité)
 				spellInfo->EffectImplicitTargetA[0] = TARGET_SRC_CASTER;
 				spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ENEMY_SRC;
@@ -4055,7 +4090,7 @@ void SpellMgr::LoadSpellCustomAttr ()
 			spellInfo->EffectRadiusIndex[0] = 13;
            count++;
            break;
-		 case 54785: // demonic jump
+		 case 54785: // Bond démoniaque
 			spellInfo->Stances = 1 << (FORM_METAMORPHOSIS - 1);
            count++;
            break; 
