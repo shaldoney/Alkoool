@@ -1661,6 +1661,19 @@ void Aura::HandleAuraSpecificMods (AuraApplication const* aurApp, Unit* caster, 
                 target->SetReducedThreatPercent(0, 0);
             break;
         }
+
+		if (GetSpellProto()->SpellFamilyFlags[2] & 0x800)
+			{
+				//King of the Jungle
+				if (apply)
+					if (AuraEffect const * aurEff = target->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_DRUID, 2850, 1))
+					{
+						int32 basepoints0 = aurEff->GetAmount();
+						target->CastCustomSpell(target, 51178, &basepoints0, NULL, NULL, true, NULL, NULL, target->GetGUID());
+					}
+			 }
+
+
         break;
     case SPELLFAMILY_DRUID:
         // Tiger's Fury
@@ -1704,8 +1717,19 @@ void Aura::HandleAuraSpecificMods (AuraApplication const* aurApp, Unit* caster, 
                     mod = 16;
                     break;
                 }
+
                 mod = value / 100 * mod;
                 value = value + (apply ? -mod : mod);
+
+				if(caster->HasAura(16929))		//peau epaisse rank 1
+					value+= value*0.26 ;
+
+				else if(caster->HasAura(16930))//peau epaisse rank 2
+					value+= value*0.52 ;
+
+				else if(caster->HasAura(16931))//peau epaisse rank 3
+					value+= value*0.78 ;
+
                 auraEff->ChangeAmount(value);
             }
             break;
