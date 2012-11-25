@@ -569,6 +569,7 @@ public:
 #define MOB_ENRAGED_WRAITH  17086
 #define EMOTE   -1000283
 #define QUEST_POWERING_OUR_DEFENSES 8490
+#define NPC_INFUSED_CRYSAL 16364
 
 struct Location {
     float x, y, z;
@@ -638,8 +639,7 @@ public:
                 Completed = true;
                 if (PlayerGUID)
                     if (Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID))
-                        CAST_PLR(pPlayer)->CompleteQuest(
-                                QUEST_POWERING_OUR_DEFENSES);
+						CAST_PLR(pPlayer)->KilledMonsterCredit(NPC_INFUSED_CRYSAL,NULL);
 
                 me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE,
                         SPELL_SCHOOL_MASK_NORMAL, NULL, false);
