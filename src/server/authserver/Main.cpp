@@ -44,8 +44,8 @@
 #ifdef _WIN32
 #include "ServiceWin32.h"
 char serviceName[] = "authserver";
-char serviceLongName[] = "Rolk's Core Auth service";
-char serviceDescription[] = "Rolk's Core World of Warcraft emulator world auth service";
+char serviceLongName[] = "ArkCORE Auth service";
+char serviceDescription[] = "ArkCORE World of Warcraft emulator world auth service";
 /*
  * -1 - not in service mode
  *  0 - stopped
@@ -169,13 +169,13 @@ extern int main(int argc, char **argv)
         sLog->outString("%s (realm-daemon)", _CLIENT_BUILD_REVISION);
         sLog->outString(" ");
         sLog->outString(" A World of Warcraft: Cataclysm Core Emulator	");
-            sLog->outString("    _/_/_/     _/_/    _/     _/   _/  _/   _/_/_/     _/_/_/  _/_/     _/_/_/");
-           sLog->outString("    _/    _/  _/   _/  _/     _/  _/   _/   _/         _/     _/   _/   _/   _/");
-           sLog->outString("   _/_/_/_/  _/   _/  _/     _/_/          _/_/_/     _/     _/   _/   _/_/_/_/");
-           sLog->outString("  _/    _/  _/   _/  _/     _/    _/          _/     _/     _/   _/   _/    _/");
-           sLog->outString(" _/    _/    _/_/   _/_/_/ _/      _/    _/_/_/     _/_/_/   _/_/  	 _/    _/ ");
-        sLog->outString(" Rolithan project (c) 2012");
-        sLog->outString("      <http://rolkithan.fr/>");
+        sLog->outString("       _/_/              _/          _/_/_/    _/_/    _/_/_/    _/_/_/_/  ");
+        sLog->outString("    _/    _/  _/  _/_/  _/  _/    _/        _/    _/  _/    _/  _/         ");
+        sLog->outString("   _/_/_/_/  _/_/      _/_/      _/        _/    _/  _/_/_/    _/_/_/      ");
+        sLog->outString("  _/    _/  _/        _/  _/    _/        _/    _/  _/    _/  _/           ");
+        sLog->outString(" _/    _/  _/        _/    _/    _/_/_/    _/_/    _/    _/  _/_/_/_/  	");
+        sLog->outString(" Arkania Community (c) 2012");
+        sLog->outString("      <http://arkania.net/>");
         sLog->outString(" ");
         sLog->outString("<Ctrl-C> to stop.\n");
 

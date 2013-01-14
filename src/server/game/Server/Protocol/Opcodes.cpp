@@ -1,11 +1,11 @@
 /*
- * Copyright (C) 2005 - 2012 MaNGOS <http://www.getmangos.com/>
+ * Copyright (C) 2005 - 2013 MaNGOS <http://www.getmangos.com/>
  *
- * Copyright (C) 2008 - 2012 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2013 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2012 ProjectSkyfire <http://www.projectskyfire.org/>
+ * Copyright (C) 2010 - 2013 ProjectSkyfire <http://www.projectskyfire.org/>
  *
- * Copyright (C) 2011 - 2012 ArkCORE <http://www.arkania.net/>
+ * Copyright (C) 2011 - 2013 ArkCORE <http://www.arkania.net/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1145,6 +1145,7 @@ void InitOpcodeTable ()
     //OPCODE( CMSG_TRACKED_ACHIEVEMENT_UPDATE, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_NULL);
     OPCODE( SMSG_QUESTUPDATE_ADD_PVP_KILL, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_ServerSide);
     OPCODE( CMSG_SET_CRITERIA_CHEAT, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_NULL);
+	OPCODE( SMSG_CALENDAR_RAID_LOCKOUT_UPDATED,           STATUS_NEVER,    PROCESS_INPLACE,       &WorldSession::Handle_ServerSide               );
     OPCODE( SMSG_CALENDAR_UPDATE_INVITE_LIST3, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_ServerSide);
     OPCODE( CMSG_UNITANIMTIER_CHEAT, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_NULL);
     OPCODE( CMSG_CHAR_CUSTOMIZE, STATUS_AUTHED, PROCESS_THREADUNSAFE, &WorldSession::HandleCharCustomize);
@@ -1211,8 +1212,8 @@ void InitOpcodeTable ()
     OPCODE( CMSG_CORPSE_MAP_POSITION_QUERY, STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleCorpseMapPositionQuery);
     OPCODE( SMSG_CORPSE_MAP_POSITION_QUERY_RESPONSE, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_ServerSide);
     OPCODE( CMSG_LFG_SET_ROLES_2, STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::Handle_NULL);
-    OPCODE( CMSG_CALENDAR_CONTEXT_EVENT_SIGNUP, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_NULL);
-    OPCODE( SMSG_CALENDAR_ACTION_PENDING, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_ServerSide);
+    OPCODE( CMSG_CALENDAR_EVENT_SIGNUP, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_NULL);
+    OPCODE( SMSG_CALENDAR_CLEAR_ACTION_PENDING, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_ServerSide);
     OPCODE( SMSG_EQUIPMENT_SET_LIST, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_ServerSide);
     OPCODE( CMSG_EQUIPMENT_SET_SAVE, STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleEquipmentSetSave);
     OPCODE( CMSG_UPDATE_PROJECTILE_POSITION, STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleUpdateProjectilePosition);
@@ -1283,7 +1284,7 @@ void InitOpcodeTable ()
     OPCODE( CMSG_AUTO_DECLINE_GUILD_INVITES, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_NULL);
     OPCODE( CMSG_SET_PRIMARY_TALENT_TREE, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_NULL);
     OPCODE( CMSG_GROUP_SET_ROLES, STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleGroupSetRoles);
-    OPCODE( CMSG_GUILD_QUERY_NEWS, STATUS_LOGGEDIN, PROCESS_INPLACE, &WorldSession::HandleGuildQueryNews);
+    //OPCODE( CMSG_GUILD_QUERY_NEWS, STATUS_LOGGEDIN, PROCESS_INPLACE, &WorldSession::HandleGuildQueryNews);
     OPCODE( SMSG_UNKNOWN_1310, STATUS_NEVER, PROCESS_INPLACE, &WorldSession::Handle_ServerSide);
     OPCODE( CMSG_RETURN_TO_GRAVEYARD, STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleMoveToGraveyard);
     OPCODE( CMSG_REFORGE, STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleReforgeOpcode);

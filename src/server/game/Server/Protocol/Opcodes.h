@@ -1,11 +1,11 @@
 /*
- * Copyright (C) 2005 - 2012 MaNGOS <http://www.getmangos.com/>
+ * Copyright (C) 2005 - 2013 MaNGOS <http://www.getmangos.com/>
  *
- * Copyright (C) 2008 - 2012 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2013 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2012 ProjectSkyfire <http://www.projectskyfire.org/>
+ * Copyright (C) 2010 - 2013 ProjectSkyfire <http://www.projectskyfire.org/>
  *
- * Copyright (C) 2011 - 2012 ArkCORE <http://www.arkania.net/>
+ * Copyright (C) 2011 - 2013 ArkCORE <http://www.arkania.net/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1157,6 +1157,7 @@ enum Opcodes
     SMSG_QUESTUPDATE_ADD_PVP_KILL                    = 0x078E0, // 4.0.6a 13623
     CMSG_SET_CRITERIA_CHEAT                          = 0x101DD, //
     SMSG_CALENDAR_UPDATE_INVITE_LIST3                = 0x0A2A0, // 4.0.6a 13623
+	SMSG_CALENDAR_RAID_LOCKOUT_UPDATED               = 0x00471, // Unknown opcode ID
     CMSG_UNITANIMTIER_CHEAT                          = 0x101DE, //
     CMSG_CHAR_CUSTOMIZE                              = 0x06484, // 4.0.6a 13623
     SMSG_CHAR_CUSTOMIZE                              = 0x02da4, // 4.0.6a 13623
@@ -1222,8 +1223,8 @@ enum Opcodes
     CMSG_CORPSE_MAP_POSITION_QUERY                   = 0x023CC, // 4.0.6a 13623
     SMSG_CORPSE_MAP_POSITION_QUERY_RESPONSE          = 0x1020A, //
     CMSG_LFG_SET_ROLES_2                             = 0x1020B, //
-    CMSG_CALENDAR_CONTEXT_EVENT_SIGNUP               = 0x0AEAC, // 4.0.6a 13623
-    SMSG_CALENDAR_ACTION_PENDING                     = 0x07E8C, // 4.0.6a 13623
+    CMSG_CALENDAR_EVENT_SIGNUP                       = 0x0DC74, // 4.0.6a 13623
+    SMSG_CALENDAR_CLEAR_ACTION_PENDING               = 0x0265E, // 4.0.6a 13623
     SMSG_EQUIPMENT_SET_LIST                          = 0x0F1A8, // 4.0.6a 13623
     CMSG_EQUIPMENT_SET_SAVE                          = 0x0BFC0, // 4.0.6a 13623
     CMSG_UPDATE_PROJECTILE_POSITION                  = 0x0EF7F, //

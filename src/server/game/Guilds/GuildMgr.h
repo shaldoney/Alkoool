@@ -1,11 +1,9 @@
 /*
- * Copyright (C) 2005 - 2012 MaNGOS <http://www.getmangos.com/>
+ * Copyright (C) 2005-2011 MaNGOS <http://www.getmangos.com/>
  *
- * Copyright (C) 2008 - 2012 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008-2011 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2012 ProjectSkyfire <http://www.projectskyfire.org/>
- *
- * Copyright (C) 2011 - 2012 ArkCORE <http://www.arkania.net/>
+ * Copyright (C) 2011- 2013 ArkCORE <http://www.arkania.net/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,16 +20,28 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
+ 
 #ifndef _GUILDMGR_H
 #define _GUILDMGR_H
 
 #include "Guild.h"
 
+struct GuildRewardsEntry
+{
+    uint32 item;
+    uint32 price;
+    uint32 achievement;
+    uint32 standing;
+};
+typedef std::vector<GuildRewardsEntry> GuildRewardsVector;
+
 class GuildMgr
 {
-    friend class ACE_Singleton<GuildMgr, ACE_Null_Mutex> ;
-    GuildMgr ();
-    ~GuildMgr ();
+    friend class ACE_Singleton<GuildMgr, ACE_Null_Mutex>;
+
+private:
+    GuildMgr();
+    ~GuildMgr();
 
 public:
     typedef UNORDERED_MAP<uint32, Guild*> GuildContainer;
@@ -40,18 +50,20 @@ public:
     Guild* GetGuildById(uint32 guildId) const;
     Guild* GetGuildByName(const std::string& guildName) const;
     std::string GetGuildNameById(uint32 guildId) const;
+	GuildRewardsVector const& GetGuildRewards() { return mGuildRewards; }
 
     void LoadGuilds();
     void AddGuild(Guild* guild);
     void RemoveGuild(uint32 guildId);
 
     uint32 GenerateGuildId();
-    void SetNextGuildId(uint32 Id)
-    {   NextGuildId = Id;}
+    void SetNextGuildId(uint32 Id) { NextGuildId = Id; }
+	void LoadGuildRewards();
 
 protected:
     uint32 NextGuildId;
     GuildContainer GuildStore;
+	GuildRewardsVector  mGuildRewards;
 };
 
 #define sGuildMgr ACE_Singleton<GuildMgr, ACE_Null_Mutex>::instance()

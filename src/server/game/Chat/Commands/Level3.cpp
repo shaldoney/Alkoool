@@ -1,9 +1,9 @@
 /*
- * Copyright (C) 2005 - 2012 MaNGOS <http://www.getmangos.com/>
+ * Copyright (C) 2005 - 2013 MaNGOS <http://www.getmangos.com/>
  *
- * Copyright (C) 2008 - 2012 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2013 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2012 ArkCORE <http://www.arkania.net/>
+ * Copyright (C) 2010 - 2013 ArkCORE <http://www.arkania.net/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -2440,7 +2440,7 @@ bool ChatHandler::HandleGuildCreateCommand (const char *args)
         return false;
     }
 
-    sObjectMgr->AddGuild(guild);
+    sGuildMgr->AddGuild(guild);
     return true;
 }
 
@@ -2463,7 +2463,7 @@ bool ChatHandler::HandleGuildInviteCommand (const char *args)
         return false;
 
     std::string glName = guildStr;
-    Guild* targetGuild = sObjectMgr->GetGuildByName(glName);
+    Guild* targetGuild = sGuildMgr->GetGuildByName(glName);
     if (!targetGuild)
         return false;
 
@@ -2483,7 +2483,7 @@ bool ChatHandler::HandleGuildUninviteCommand (const char *args)
     if (!glId)
         return false;
 
-    Guild* targetGuild = sObjectMgr->GetGuildById(glId);
+    Guild* targetGuild = sGuildMgr->GetGuildById(glId);
     if (!targetGuild)
         return false;
 
@@ -2509,7 +2509,7 @@ bool ChatHandler::HandleGuildRankCommand (const char *args)
     if (!glId)
         return false;
 
-    Guild* targetGuild = sObjectMgr->GetGuildById(glId);
+    Guild* targetGuild = sGuildMgr->GetGuildById(glId);
     if (!targetGuild)
         return false;
 
@@ -2528,7 +2528,7 @@ bool ChatHandler::HandleGuildDeleteCommand (const char *args)
 
     std::string gld = guildStr;
 
-    Guild* targetGuild = sObjectMgr->GetGuildByName(gld);
+    Guild* targetGuild = sGuildMgr->GetGuildByName(gld);
     if (!targetGuild)
         return false;
 
@@ -5286,155 +5286,6 @@ bool ChatHandler::HandleSendMessageCommand (const char *args)
 bool ChatHandler::HandleFlushArenaPointsCommand (const char * /*args*/)
 {
     sBattlegroundMgr->DistributeArenaPoints();
-    return true;
-}
-
-bool ChatHandler::HandleModifyGenderCommand (const char *args)
-{
-    if (!*args)
-        return false;
-
-    Player *player = getSelectedPlayer();
-
-    if (!player)
-    {
-        PSendSysMessage(LANG_PLAYER_NOT_FOUND);
-        SetSentErrorMessage(true);
-        return false;
-    }
-
-    PlayerInfo const* info = sObjectMgr->GetPlayerInfo(player->getRace(), player->getClass());
-    if (!info)
-        return false;
-
-    char const* gender_str = (char*) args;
-    int gender_len = strlen(gender_str);
-
-    Gender gender;
-
-    if (!strncmp(gender_str, "male", gender_len))          // MALE
-    {
-        if (player->getGender() == GENDER_MALE)
-            return true;
-
-        gender = GENDER_MALE;
-    }
-    else if (!strncmp(gender_str, "female", gender_len))          // FEMALE
-    {
-        if (player->getGender() == GENDER_FEMALE)
-            return true;
-
-        gender = GENDER_FEMALE;
-    }
-    else
-    {
-        SendSysMessage(LANG_MUST_MALE_OR_FEMALE);
-        SetSentErrorMessage(true);
-        return false;
-    }
-
-    // Set gender
-    player->SetByteValue(UNIT_FIELD_BYTES_0, 2, gender);
-    player->SetByteValue(PLAYER_BYTES_3, 0, gender);
-
-    // Change display ID
-    player->InitDisplayIds();
-
-    char const* gender_full = gender ? "female" : "male";
-
-    PSendSysMessage(LANG_YOU_CHANGE_GENDER, GetNameLink(player).c_str(), gender_full);
-
-    if (needReportToTarget(player))
-        ChatHandler(player).PSendSysMessage(LANG_YOUR_GENDER_CHANGED, gender_full, GetNameLink().c_str());
-
-    return true;
-}
-
-bool ChatHandler::HandleModifyHonorCommand(const char *args)
-{
-    if (!*args)
-        return false;
-
-    Player *target =getSelectedPlayer();
-    if (!target)
-    {
-        SendSysMessage(LANG_PLAYER_NOT_FOUND);
-        SetSentErrorMessage(true);
-        return false;
-    }
-
-    // check online security
-    if (HasLowerSecurity(target, 0))
-        return false;
-
-    uint32 amount = (uint32) atoi(args);
-    target->ModifyHonorPoints(amount);
-    return true;
-}
-
-bool ChatHandler::HandleModifyConquestCommand(const char *args)
-{
-    if (!*args)
-        return false;
-
-    Player *target =getSelectedPlayer();
-    if (!target)
-    {
-        SendSysMessage(LANG_PLAYER_NOT_FOUND);
-        SetSentErrorMessage(true);
-        return false;
-    }
-
-    // check online security
-    if (HasLowerSecurity(target, 0))
-        return false;
-
-    uint32 amount = (uint32) atoi(args);
-    target->ModifyConquestPoints(amount);
-    return true;
-}
-
-bool ChatHandler::HandleModifyValorCommand(const char *args)
-{
-    if (!*args)
-        return false;
-
-    Player *target =getSelectedPlayer();
-    if (!target)
-    {
-        SendSysMessage(LANG_PLAYER_NOT_FOUND);
-        SetSentErrorMessage(true);
-        return false;
-    }
-
-    // check online security
-    if (HasLowerSecurity(target, 0))
-        return false;
-
-    uint32 amount = (uint32) atoi(args);
-    target->ModifyValorPoints(amount);
-    return true;
-}
-
-bool ChatHandler::HandleModifyJusticeCommand(const char *args)
-{
-    if (!*args)
-        return false;
-
-    Player *target =getSelectedPlayer();
-    if (!target)
-    {
-        SendSysMessage(LANG_PLAYER_NOT_FOUND);
-        SetSentErrorMessage(true);
-        return false;
-    }
-
-    // check online security
-    if (HasLowerSecurity(target, 0))
-        return false;
-
-    uint32 amount = (uint32) atoi(args);
-    target->ModifyJusticePoints(amount);
     return true;
 }
 

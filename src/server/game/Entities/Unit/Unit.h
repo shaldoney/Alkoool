@@ -1,9 +1,9 @@
 /*
- * Copyright (C) 2005 - 2012 MaNGOS <http://www.getmangos.com/>
+ * Copyright (C) 2005 - 2013 MaNGOS <http://www.getmangos.com/>
  *
- * Copyright (C) 2008 - 2012 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2013 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2012 ArkCORE <http://www.arkania.net/>
+ * Copyright (C) 2010 - 2013 ArkCORE <http://www.arkania.net/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -515,6 +515,25 @@ struct DiminishingReturn
 enum MeleeHitOutcome
 {
     MELEE_HIT_EVADE, MELEE_HIT_MISS, MELEE_HIT_DODGE, MELEE_HIT_BLOCK, MELEE_HIT_PARRY, MELEE_HIT_GLANCING, MELEE_HIT_CRIT, MELEE_HIT_CRUSHING, MELEE_HIT_NORMAL
+};
+
+class DispelInfo
+{
+private:
+    Unit* const m_dispeller;
+    uint32 const m_dispellerSpellId;
+    uint8 m_chargesRemoved;
+public:
+    explicit DispelInfo(Unit* _dispeller, uint32 _dispellerSpellId, uint8 _chargesRemoved) :
+    m_dispeller(_dispeller), m_dispellerSpellId(_dispellerSpellId), m_chargesRemoved(_chargesRemoved) {}
+
+    Unit* GetDispeller() { return m_dispeller; }
+    uint32 GetDispellerSpellId() { return m_dispellerSpellId; }
+    uint8 GetRemovedCharges() { return m_chargesRemoved; }
+    void SetRemovedCharges(uint8 amount)
+    {
+        m_chargesRemoved = amount;
+    }
 };
 
 struct CleanDamage
@@ -1178,6 +1197,10 @@ public:
         return GetMaxHealth() ? 100.f * GetHealth() / GetMaxHealth() : 0.0f;
     }
     inline uint32 CountPctFromMaxHealth (int32 pct) const
+    {
+        return uint32(float(pct) * GetMaxHealth() / 100.0f);
+    }
+    inline uint32 CountPctFromCurHealth (int32 pct) const
     {
         return uint32(float(pct) * GetMaxHealth() / 100.0f);
     }

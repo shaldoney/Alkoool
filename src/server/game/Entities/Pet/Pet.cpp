@@ -1,11 +1,11 @@
 /*
- * Copyright (C) 2005 - 2012 MaNGOS <http://www.getmangos.com/>
+ * Copyright (C) 2005 - 2013 MaNGOS <http://www.getmangos.com/>
  *
- * Copyright (C) 2008 - 2012 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2013 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2012 ProjectSkyfire <http://www.projectskyfire.org/>
+ * Copyright (C) 2010 - 2013 ProjectSkyfire <http://www.projectskyfire.org/>
  *
- * Copyright (C) 2011 - 2012 ArkCORE <http://www.arkania.net/>
+ * Copyright (C) 2011 - 2013 ArkCORE <http://www.arkania.net/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -132,22 +132,7 @@ bool Pet::LoadPetFromDB (Player* owner, uint32 petentry, uint32 petnumber, bool 
         // any current or other non-stabled pet (for hunter "call pet")
         //                                        0   1      2(?)   3        4      5    6           7     8     9        10         11       12            13      14        15                 16                 17              18
         result = CharacterDatabase.PQuery("SELECT id, entry, owner, modelid, level, exp, Reactstate, slot, name, renamed, curhealth, curmana, curhappiness, abdata, savetime, resettalents_cost, resettalents_time, CreatedBySpell, PetType "
-                "FROM character_pet WHERE owner = '%u' AND ((slot >= '%u' AND slot <= '%u') OR slot > '%u')", ownerid, PET_SLOT_HUNTER_FIRST, PET_SLOT_HUNTER_LAST, PET_SLOT_STABLE_LAST);
-
-    if (m_owner->getClass() == CLASS_MAGE)          // Mage pet (only frost)
-    {
-        QueryResult result2;
-        result2 = CharacterDatabase.PQuery("SELECT disabled FROM character_spell WHERE guid = '%u' AND spell = 31687", ownerid);
-        if (result2)
-        {
-            Field *fields2 = result2->Fetch();
-            if (fields2[0].GetUInt32() == 1)
-            {
-                m_loading = false;
-                return false;
-            }
-        }
-    }
+                "FROM character_pet WHERE owner = '%u' AND ((slot >= '%u' AND slot <= '%u') OR slot = '%u')", ownerid, PET_SLOT_HUNTER_FIRST, PET_SLOT_HUNTER_LAST, slotID);
 
     if (!result)
     {
@@ -211,8 +196,7 @@ bool Pet::LoadPetFromDB (Player* owner, uint32 petentry, uint32 petnumber, bool 
         return false;
     }
 
-    float px, py
-,    pz;
+    float px, py, pz;
     owner->GetClosePoint(px, py, pz, GetObjectSize(), PET_FOLLOW_DIST, GetFollowAngle());
     Relocate(px, py, pz, owner->GetOrientation());
 
@@ -223,6 +207,7 @@ bool Pet::LoadPetFromDB (Player* owner, uint32 petentry, uint32 petnumber, bool 
         return false;
     }
 
+    //SetEntry(petentry);
     setPetType(pet_type);
     setFaction(owner->getFaction());
     SetUInt32Value(UNIT_CREATED_BY_SPELL, summon_spell_id);
@@ -380,7 +365,7 @@ bool Pet::LoadPetFromDB (Player* owner, uint32 petentry, uint32 petnumber, bool 
 
 void Pet::SavePetToDB (PetSlot mode)
 {
-    sLog->outDebug(LOG_FILTER_PETS, "Pet::SavePetToDB PetSlot [%i]", int32(mode));
+    //sLog->outDebug(LOG_FILTER_PETS, "Pet::SavePetToDB PetSlot [%i]", int32(mode));
 
     if (!GetEntry())
         return;
@@ -399,6 +384,7 @@ void Pet::SavePetToDB (PetSlot mode)
 
     if (mode == PET_SLOT_ACTUAL_PET_SLOT)
         mode = pOwner->m_currentPetSlot;
+        
     if (mode >= PET_SLOT_HUNTER_FIRST && mode <= PET_SLOT_HUNTER_LAST && getPetType() != HUNTER_PET)
         assert(false);
     /*if (mode == PET_SLOT_OTHER_PET && getPetType() == HUNTER_PET)
@@ -435,10 +421,13 @@ void Pet::SavePetToDB (PetSlot mode)
     {
         uint32 owner = GUID_LOPART(GetOwnerGUID());
         std::string name = m_name;
+       
         CharacterDatabase.EscapeString(name);
-        SQLTransaction trans = CharacterDatabase.BeginTransaction();
+        trans = CharacterDatabase.BeginTransaction();
         // remove current data
         trans->PAppend("DELETE FROM character_pet WHERE owner = '%u' AND id = '%u'", owner, m_charmInfo->GetPetNumber());
+        // hack = delete slot 100 pet
+        trans->PAppend("DELETE FROM character_pet WHERE owner = '%u' AND slot = '%d'", owner, 100);
         // Remove duplicate ghouls (dks can only have 1 ghoul at the same time)
         trans->PAppend("DELETE FROM character_pet WHERE owner = '%u' AND `owner` IN (SELECT `guid` FROM `characters` WHERE `class`=6);", owner);
 
@@ -1656,7 +1645,7 @@ bool Pet::resetTalents (bool no_cost)
         return false;
     }
 
-    uint32 cost = 0;
+    uint64 cost = 0;
 
     if (!no_cost)
     {

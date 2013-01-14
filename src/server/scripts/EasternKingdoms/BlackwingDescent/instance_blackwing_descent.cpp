@@ -1,23 +1,23 @@
 /*
-* Copyright (C) 2005 - 2011 MaNGOS <http://www.getmangos.org/>
-*
-* Copyright (C) 2008 - 2011 TrinityCore <http://www.trinitycore.org/>
-*
-* Copyright (C) 2011 ArkCORE <http://www.arkania.net/>
-*
-* This program is free software; you can redistribute it and/or modify it
-* under the terms of the GNU General Public License as published by the
-* Free Software Foundation; either version 2 of the License, or (at your
-* option) any later version.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT
-* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-* more details.
-*
-* You should have received a copy of the GNU General Public License along
-* with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * Copyright (C) 2011 True Blood <http://www.trueblood-servers.com/>
+ * By Asardial
+ *
+ * Copyright (C) 2011 - 2013 ArkCORE <http://www.arkania.net/>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ */
 
 #include "blackwing_descent.h"
 #include "ScriptPCH.h"
@@ -67,9 +67,6 @@ public:
         // Misc
         uint32 uiEncounter[MAX_ENCOUNTER];
         uint64 uiLordVictorNefarian;
-		uint32 Firstbossdone;
-		uint32 Secondbossdone;
-		uint32 Atrabossdone;
 
         // Gobs
         uint64 gobPreBossDoor;
@@ -112,9 +109,6 @@ public:
 
             // Misc
             uiLordVictorNefarian = 0;
-			Firstbossdone = DONE;
-		    Secondbossdone = DONE;
-		    Atrabossdone = DONE;
 
             // Gobs
             gobPreBossDoor = 0;
@@ -204,14 +198,13 @@ public:
             }
         }
 
-        void OnGameObjectCreate(GameObject* go)
+        void OnGameObjectCreate(GameObject* go, bool /*add*/)
         {
             switch(go->GetEntry())
             {
             case GOB_DOOR_PRE_BOSSES:
                 gobPreBossDoor = go->GetGUID();
-				if (Firstbossdone == DONE)
-                go->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
+                HandleGameObject(NULL, (GetData(DATA_MAGMAW)==DONE) && (GetData(DATA_OMNOTRON_DEFENSE_SYSTEM)==DONE), go);
                 break;
 
             case GOB_MALORIAKS_CAULDRON:
@@ -220,12 +213,10 @@ public:
 
             case GOB_DOOR_ATRAMEDES:
                 gobAtramedesBossDoor = go->GetGUID();
-				if (Secondbossdone == DONE)
-                go->SetGoState(GO_STATE_ACTIVE);
+                HandleGameObject(NULL, (GetData(DATA_MALORIAK)==DONE) && (GetData(DATA_CHIMAERON)==DONE), go);
                 break;
 
             case GOB_ONYXIA_PLATFORM:
-				if (Atrabossdone == DONE)
                 gobOnyxiaPlatform = go->GetGUID();
                 go->SetPhaseMask(GetData(DATA_ATRAMEDES)==DONE ? 1 : 2, true);
                 break;
@@ -310,9 +301,8 @@ public:
             return Encounter[type];
         }
 
-        bool SetBossState(uint32 data, EncounterState state)
-		{
-		if (!InstanceScript::SetBossState(data, state))
+        bool SetBossState(uint32 data, EncounterState state) {
+            if (!InstanceScript::SetBossState(data, state))
                 return false;
 
             if(state == DONE)
@@ -321,16 +311,17 @@ public:
                 {
                 case DATA_MAGMAW:
                 case DATA_OMNOTRON_DEFENSE_SYSTEM:
-					return Firstbossdone;
+                    HandleGameObject(gobPreBossDoor, GetBossState(DATA_MAGMAW)==DONE && GetBossState(DATA_OMNOTRON_DEFENSE_SYSTEM)==DONE);
                     break;
 
                 case DATA_MALORIAK:
                 case DATA_CHIMAERON:
-					return Secondbossdone;
+                    HandleGameObject(gobAtramedesBossDoor, GetBossState(DATA_MALORIAK)==DONE && GetBossState(DATA_CHIMAERON)==DONE);
                     break;
 
                 case DATA_ATRAMEDES:
-                    return Atrabossdone;
+                    if(GameObject* onyxiaPlatform = instance->GetGameObject(gobOnyxiaPlatform))
+                        onyxiaPlatform->SetPhaseMask(PHASEMASK_NORMAL, true);
                     break;
                 }
             }
@@ -340,11 +331,20 @@ public:
 
         bool CheckRequiredBosses(uint32 bossId, Player const* player = NULL) const
         {
-            if ((player->GetSession()->GetSecurity() > SEC_GAMEMASTER ))
-                return true;
+                if ((player->GetSession()->GetSecurity() > SEC_GAMEMASTER ))
+                    return true;
+
+                switch (bossId)
+                {
+                    case DATA_MAGMAW:
+                    case DATA_MALORIAK:
+                    case DATA_ATRAMEDES:
+                    default:
+                        break;
+                }
 
             return true;
-       } 
+        }
 
         std::string GetSaveData()
         {
@@ -412,4 +412,4 @@ public:
 void AddSC_instance_blackwing_descent()
 {
     new instance_blackwing_descent();
-}
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        

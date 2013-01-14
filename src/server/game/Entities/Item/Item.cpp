@@ -1,11 +1,11 @@
 /*
- * Copyright (C) 2005 - 2012 MaNGOS <http://www.getmangos.com/>
+ * Copyright (C) 2005 - 2013 MaNGOS <http://www.getmangos.com/>
  *
- * Copyright (C) 2008 - 2012 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2013 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2012 ProjectSkyfire <http://www.projectskyfire.org/>
+ * Copyright (C) 2010 - 2013 ProjectSkyfire <http://www.projectskyfire.org/>
  *
- * Copyright (C) 2011 - 2012 ArkCORE <http://www.arkania.net/>
+ * Copyright (C) 2011 - 2013 ArkCORE <http://www.arkania.net/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -392,6 +392,8 @@ Item::Item ()
     m_refundRecipient = 0;
     m_paidMoney = 0;
     m_paidExtendedCost = 0;
+    
+    m_fakeDisplayEntry = 0;
 }
 
 bool Item::Create (uint32 guidlow, uint32 itemid, Player const* owner)
@@ -596,6 +598,9 @@ bool Item::LoadFromDB (uint32 guid, uint64 owner_guid, Field* fields, uint32 ent
     SetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME, fields[9].GetUInt32());
     SetText(fields[10].GetString());
 
+    if (uint32 fakeEntry = sObjectMgr->GetFakeItemEntry(guid))
+        SetFakeDisplay(fakeEntry);
+
     if (need_save)          // normal item changed state set not work at loading
     {
         PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPDATE_ITEM_INSTANCE_ON_LOAD);
@@ -609,31 +614,32 @@ bool Item::LoadFromDB (uint32 guid, uint64 owner_guid, Field* fields, uint32 ent
     return true;
 }
 
-void Item::DeleteFromDB (SQLTransaction& trans)
+void Item::DeleteFromDB(SQLTransaction& trans)
 {
+    sObjectMgr->RemoveFakeItem(GetGUIDLow());
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_ITEM_INSTANCE);
     stmt->setUInt32(0, GetGUIDLow());
     trans->Append(stmt);
 }
 
-void Item::DeleteFromInventoryDB (SQLTransaction& trans)
+void Item::DeleteFromInventoryDB(SQLTransaction& trans)
 {
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_INVENTORY_ITEM);
     stmt->setUInt32(0, GetGUIDLow());
     trans->Append(stmt);
 }
 
-ItemPrototype const *Item::GetProto () const
+ItemPrototype const *Item::GetProto() const
 {
     return ObjectMgr::GetItemPrototype(GetEntry());
 }
 
-Player* Item::GetOwner () const
+Player* Item::GetOwner() const
 {
     return sObjectMgr->GetPlayer(GetOwnerGUID());
 }
 
-uint32 Item::GetSkill ()
+uint32 Item::GetSkill()
 {
     const static uint32 item_weapon_skills[MAX_ITEM_SUBCLASS_WEAPON] =
     { SKILL_AXES, SKILL_2H_AXES, SKILL_BOWS, SKILL_GUNS, SKILL_MACES, SKILL_2H_MACES, SKILL_POLEARMS, SKILL_SWORDS, SKILL_2H_SWORDS, 0, SKILL_STAVES, 0, 0, SKILL_FIST_WEAPONS, 0, SKILL_DAGGERS, SKILL_THROWN, SKILL_ASSASSINATION, SKILL_CROSSBOWS, SKILL_WANDS, SKILL_FISHING };
@@ -662,7 +668,7 @@ uint32 Item::GetSkill ()
     }
 }
 
-uint32 Item::GetSpell ()
+uint32 Item::GetSpell()
 {
     ItemPrototype const* proto = GetProto();
 
@@ -1260,7 +1266,7 @@ void Item::BuildUpdate (UpdateDataMapType& data_map)
     ClearUpdateMask(false);
 }
 
-void Item::SaveRefundDataToDB ()
+void Item::SaveRefundDataToDB()
 {
     SQLTransaction trans = CharacterDatabase.BeginTransaction();
     trans->PAppend("DELETE FROM item_refund_instance WHERE item_guid = '%u'", GetGUIDLow());
@@ -1269,12 +1275,12 @@ void Item::SaveRefundDataToDB ()
     CharacterDatabase.CommitTransaction(trans);
 }
 
-void Item::DeleteRefundDataFromDB ()
+void Item::DeleteRefundDataFromDB()
 {
     CharacterDatabase.PExecute("DELETE FROM item_refund_instance WHERE item_guid = '%u'", GetGUIDLow());
 }
 
-void Item::SetNotRefundable (Player *owner, bool changestate)
+void Item::SetNotRefundable(Player *owner, bool changestate)
 {
     if (!HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_REFUNDABLE))
         return;
@@ -1292,7 +1298,7 @@ void Item::SetNotRefundable (Player *owner, bool changestate)
     owner->DeleteRefundReference(GetGUIDLow());
 }
 
-void Item::UpdatePlayedTime (Player *owner)
+void Item::UpdatePlayedTime(Player *owner)
 {
     /*  Here we update our played time
      We simply add a number to the current played time,
@@ -1320,19 +1326,19 @@ void Item::UpdatePlayedTime (Player *owner)
     SetNotRefundable(owner);
 }
 
-uint32 Item::GetPlayedTime ()
+uint32 Item::GetPlayedTime()
 {
     time_t curtime = time(NULL);
     uint32 elapsed = uint32(curtime - m_lastPlayedTimeUpdate);
     return GetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME) + elapsed;
 }
 
-bool Item::IsRefundExpired ()
+bool Item::IsRefundExpired()
 {
     return (GetPlayedTime() > 2 * HOUR);
 }
 
-void Item::SetSoulboundTradeable (AllowedLooterSet* allowedLooters, Player* currentOwner, bool apply)
+void Item::SetSoulboundTradeable(AllowedLooterSet* allowedLooters, Player* currentOwner, bool apply)
 {
     if (apply)
     {
@@ -1353,7 +1359,7 @@ void Item::SetSoulboundTradeable (AllowedLooterSet* allowedLooters, Player* curr
     }
 }
 
-bool Item::CheckSoulboundTradeExpire ()
+bool Item::CheckSoulboundTradeExpire()
 {
     // called from owner's update - GetOwner() MUST be valid
     if (GetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME) + 2 * HOUR < GetOwner()->GetTotalPlayedTime())
@@ -1363,4 +1369,51 @@ bool Item::CheckSoulboundTradeExpire ()
     }
 
     return false;
+}
+
+FakeResult Item::SetFakeDisplay(uint32 iEntry)
+{
+    if (!iEntry)
+    {
+        RemoveFakeDisplay();
+        return FAKE_ERR_OK;
+    }
+
+    ItemPrototype const* myTmpl    = GetProto();
+    ItemPrototype const* otherTmpl = sObjectMgr->GetItemPrototype(iEntry);
+
+    if (!otherTmpl)
+        return FAKE_ERR_CANT_FIND_ITEM;
+
+    // Inventory slot must match
+    if (myTmpl->InventoryType != otherTmpl->InventoryType)
+        return FAKE_ERR_DIFF_INVENTORYTYPE;
+    
+    // Valid classes are weapons and armor
+    if (((myTmpl->Class != 2) && (myTmpl->Class != 4)) || ((otherTmpl->Class != 2) && (otherTmpl->Class != 4)))
+        return FAKE_ERR_INVALID_CLASS;
+
+    // Subclasses should match (eg, no axe->mace)
+    if (myTmpl->SubClass != otherTmpl->SubClass)
+        return FAKE_ERR_DIFF_SUBCLASS;
+
+    if (m_fakeDisplayEntry != iEntry)
+    {
+        sObjectMgr->SetFakeItem(GetGUIDLow(), iEntry);
+
+        (!m_fakeDisplayEntry) ? CharacterDatabase.PExecute("INSERT INTO fake_items VALUES (%u, %u)", GetGUIDLow(), iEntry) :
+                                CharacterDatabase.PExecute("UPDATE fake_items SET fakeEntry = %u WHERE guid = %u", iEntry, GetGUIDLow());
+        m_fakeDisplayEntry = iEntry;
+    }
+
+    return FAKE_ERR_OK;
+}
+
+void Item::RemoveFakeDisplay()
+{
+    if (GetFakeDisplayEntry())
+    {
+        m_fakeDisplayEntry = 0;
+        CharacterDatabase.PExecute("DELETE FROM fake_items WHERE guid = %u", GetGUIDLow());
+    }
 }

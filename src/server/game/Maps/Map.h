@@ -1,9 +1,9 @@
 /*
- * Copyright (C) 2005 - 2012 MaNGOS <http://www.getmangos.com/>
+ * Copyright (C) 2005 - 2013 MaNGOS <http://www.getmangos.com/>
  *
- * Copyright (C) 2008 - 2012 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2013 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2012 ArkCORE <http://www.arkania.net/>
+ * Copyright (C) 2010 - 2013 ArkCORE <http://www.arkania.net/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -542,6 +542,7 @@ public:
 
     template<class T> void SwitchGridContainers (T* obj, bool active);
     template<class NOTIFIER> void VisitAll (const float &x, const float &y, float radius, NOTIFIER &notifier);
+    template<class NOTIFIER> void VisitFirstFound(const float &x, const float &y, float radius, NOTIFIER &notifier);
     template<class NOTIFIER> void VisitWorld (const float &x, const float &y, float radius, NOTIFIER &notifier);
     template<class NOTIFIER> void VisitGrid (const float &x, const float &y, float radius, NOTIFIER &notifier);
     CreatureGroupHolderType CreatureGroupHolder;
@@ -827,6 +828,23 @@ inline void Map::VisitAll (const float &x, const float &y, float radius, NOTIFIE
     cell.Visit(p, world_object_notifier, *this, radius, x, y);
     TypeContainerVisitor<NOTIFIER, GridTypeMapContainer> grid_object_notifier(notifier);
     cell.Visit(p, grid_object_notifier, *this, radius, x, y);
+}
+
+// should be used with Searcher notifiers, tries to search world if nothing found in grid
+template<class NOTIFIER>
+inline void Map::VisitFirstFound(const float &x, const float &y, float radius, NOTIFIER &notifier)
+{
+    CellPair p(Trinity::ComputeCellPair(x, y));
+    Cell cell(p);
+    cell.SetNoCreate();
+
+    TypeContainerVisitor<NOTIFIER, WorldTypeMapContainer> world_object_notifier(notifier);
+    cell.Visit(p, world_object_notifier, *this, radius, x, y);
+    if (!notifier.i_object)
+    {
+        TypeContainerVisitor<NOTIFIER, GridTypeMapContainer >  grid_object_notifier(notifier);
+        cell.Visit(p, grid_object_notifier, *this, radius, x, y);
+    }
 }
 
 template<class NOTIFIER>

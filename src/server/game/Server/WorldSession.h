@@ -1,11 +1,11 @@
 /*
- * Copyright (C) 2005 - 2012 MaNGOS <http://www.getmangos.com/>
+ * Copyright (C) 2005 - 2013 MaNGOS <http://www.getmangos.com/>
  *
- * Copyright (C) 2008 - 2012 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2013 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2012 ProjectSkyfire <http://www.projectskyfire.org/>
+ * Copyright (C) 2010 - 2013 ProjectSkyfire <http://www.projectskyfire.org/>
  *
- * Copyright (C) 2011 - 2012 ArkCORE <http://www.arkania.net/>
+ * Copyright (C) 2011 - 2013 ArkCORE <http://www.arkania.net/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,9 @@ struct AuctionEntry;
 struct DeclinedName;
 struct MovementInfo;
 
+class CalendarEvent;
+class CalendarInvite;
+class InstanceSave;
 class Creature;
 class Item;
 class Object;
@@ -906,7 +909,22 @@ public:
     void HandleCalendarEventModeratorStatus (WorldPacket& recv_data);
     void HandleCalendarComplain (WorldPacket& recv_data);
     void HandleCalendarGetNumPending (WorldPacket& recv_data);
+	void HandleCalendarEventSignup(WorldPacket& recvData);
 
+    void SendCalendarEvent(CalendarEvent const& calendarEvent, CalendarSendEventType sendEventType);
+    void SendCalendarEventInvite(CalendarInvite const& invite, bool pending);
+    void SendCalendarEventInviteAlert(CalendarEvent const& calendarEvent, CalendarInvite const& calendarInvite);
+    void SendCalendarEventInviteRemove(CalendarInvite const& invite, uint32 flags);
+    void SendCalendarEventInviteRemoveAlert(CalendarEvent const& calendarEvent, CalendarInviteStatus status);
+    void SendCalendarEventRemovedAlert(CalendarEvent const& calendarEvent);
+    void SendCalendarEventUpdateAlert(CalendarEvent const& calendarEvent, CalendarSendEventType sendEventType);
+    void SendCalendarEventStatus(CalendarEvent const& calendarEvent, CalendarInvite const& invite);
+    void SendCalendarEventModeratorStatusAlert(CalendarInvite const& invite);
+    void SendCalendarCommandResult(CalendarError err, char const* param = NULL);
+    void SendCalendarRaidLockout(InstanceSave const* save, bool add);
+    void SendCalendarRaidLockoutUpdated(InstanceSave const* save);
+    void SendCalendarClearActionPending();
+	
     void HandleSpellClick (WorldPacket& recv_data);
     void HandleMirrrorImageDataRequest (WorldPacket & recv_data);
     void HandleAlterAppearance (WorldPacket& recv_data);

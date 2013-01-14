@@ -1,11 +1,11 @@
 /*
- * Copyright (C) 2005 - 2012 MaNGOS <http://www.getmangos.com/>
+ * Copyright (C) 2005 - 2013 MaNGOS <http://www.getmangos.com/>
  *
- * Copyright (C) 2008 - 2012 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2013 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2012 ProjectSkyfire <http://www.projectskyfire.org/>
+ * Copyright (C) 2010 - 2013 ProjectSkyfire <http://www.projectskyfire.org/>
  *
- * Copyright (C) 2011 - 2012 ArkCORE <http://www.arkania.net/>
+ * Copyright (C) 2011 - 2013 ArkCORE <http://www.arkania.net/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -318,6 +318,9 @@ enum ArkCoreStrings
 
     // Use for custom patches             11000-11999
     LANG_AUTO_BROADCAST = 11000, LANG_INVALID_REALMID = 11001, LANG_FAILED_NO_PLACE_FOR_PET = 11002,
+    LANG_FAKEITEM_MISSING_ITEMS = 11003, LANG_FAKEITEM_MISSING_MONEY = 11004, LANG_FAKEITEM_MISSING_ITEM = 11007, LANG_FAKEITEM_DIFF_TYPE = 11008,
+    LANG_FAKEITEM_INVALID_TYPE = 11009, LANG_FAKEITEM_CLEARITEM = 11010, LANG_FAKEITEM_INVALID_QUALITY = 11011, LANG_FAKEITEM_DIFF_CLASS = 11012,
+    LANG_FAKEITEM_DIFF_RACE = 11013,
 
 // NOT RESERVED IDS                   12000-1999999999
 // `db_script_string` table index     2000000000-2000009999 (MIN_DB_SCRIPT_STRING_ID-MAX_DB_SCRIPT_STRING_ID)

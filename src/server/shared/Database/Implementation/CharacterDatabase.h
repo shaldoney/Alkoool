@@ -1,11 +1,11 @@
 /*
- * Copyright (C) 2005 - 2012 MaNGOS <http://www.getmangos.com/>
+ * Copyright (C) 2005 - 2013 MaNGOS <http://www.getmangos.com/>
  *
- * Copyright (C) 2008 - 2012 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2013 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2012 ProjectSkyfire <http://www.projectskyfire.org/>
+ * Copyright (C) 2010 - 2013 ProjectSkyfire <http://www.projectskyfire.org/>
  *
- * Copyright (C) 2011 - 2012 ArkCORE <http://www.arkania.net/>
+ * Copyright (C) 2011 - 2013 ArkCORE <http://www.arkania.net/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@ enum CharacterDatabaseStatements {
 	CHAR_DEL_TINY_GROUPS,
 	CHAR_DEL_NONEXISTENT_GROUP_MEMBERS,
 	CHAR_DEL_NONEXISTENT_GROUP_INSTANCES,
-	CHAR_DEL_EXPIRED_BANS,
 	CHAR_GET_GUID_BY_NAME,
 	CHAR_ADD_BAN,
 	CHAR_SET_NOT_BANNED,
@@ -136,6 +135,24 @@ enum CharacterDatabaseStatements {
 	CHAR_ADD_ACCOUNT_INSTANCE_LOCK_TIMES,
 	CHAR_LOAD_PLAYER_NAME_CLASS,
 	CHAR_LOAD_MATCH_MAKER_RATING,
+	
+    // Bans
+    CHAR_INS_CHARACTER_BAN,
+    CHAR_UPD_CHARACTER_BAN,
+    CHAR_DEL_EXPIRED_BANS,
+    CHAR_SEL_BANINFO,
+    CHAR_SEL_BANINFO_LIST,
+    CHAR_SEL_BANNED_NAME,
+    CHAR_SEL_ENUM,
+    CHAR_SEL_ENUM_DECLINED_NAME,
+    CHAR_SEL_FREE_NAME,
+    CHAR_SEL_GUID_RACE_ACC_BY_NAME,
+    CHAR_SEL_CHAR_RACE,
+    CHAR_SEL_CHAR_LEVEL,
+    CHAR_SEL_CHAR_ZONE,
+    CHAR_SEL_CHARACTER_NAME_DATA,
+    CHAR_SEL_CHAR_POSITION_XYZ,
+    CHAR_SEL_CHAR_POSITION,	
 
 	// Guild handling
 	CHAR_ADD_GUILD,

@@ -1,9 +1,9 @@
 /*
- * Copyright (C) 2005 - 2012 MaNGOS <http://www.getmangos.com/>
+ * Copyright (C) 2005 - 2013 MaNGOS <http://www.getmangos.com/>
  *
- * Copyright (C) 2008 - 2012 Trinity <http://www.trinitycore.org/>
+ * Copyright (C) 2008 - 2013 Trinity <http://www.trinitycore.org/>
  *
- * Copyright (C) 2010 - 2012 ArkCORE <http://www.arkania.net/>
+ * Copyright (C) 2010 - 2013 ArkCORE <http://www.arkania.net/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -519,6 +519,7 @@ void Spell::SpellDamageSchoolDmg (SpellEffIndex effIndex)
                 if (unitTarget->GetGUID() == m_caster->GetGUID() || unitTarget->GetTypeId() != TYPEID_PLAYER)
                     return;
 
+
                 float radius = GetSpellRadiusForHostile(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[0]));
                 if (!radius)
                     return;
@@ -742,12 +743,13 @@ void Spell::SpellDamageSchoolDmg (SpellEffIndex effIndex)
                     uint32 pct = stack * 10;
 
                     // Mastery
-                    if (m_caster->HasAuraType(SPELL_AURA_MASTERY))
+                    if (m_caster->HasAuraType(SPELL_AURA_MASTERY)){
                         if (m_caster->ToPlayer()->GetTalentBranchSpec(m_caster->ToPlayer()->GetActiveSpec()) == BS_PRIEST_SHADOW)
                             pct += 1.5f * m_caster->ToPlayer()->GetMasteryPoints();
-
+				 }
                     AddPctN(damage, pct);
                     m_caster->RemoveAurasDueToSpell(77487);
+					m_caster->CastSpell(m_caster, 95799, true);//Give "Empowered Shadow" - ID:95799
                 }
 
                 //Mind Melt Aura remove
@@ -1331,6 +1333,7 @@ void Spell::EffectDummy (SpellEffIndex effIndex)
                 return;
             }
 
+
             m_caster->CastSpell(m_caster, spell_id, true);
             return;
         }
@@ -1409,6 +1412,7 @@ void Spell::EffectDummy (SpellEffIndex effIndex)
                 unitTarget->CastSpell(unitTarget, 46020, true);
                 unitTarget->CastSpell(unitTarget, 44867, true);
             }
+
 
             return;
         }
@@ -1494,6 +1498,7 @@ void Spell::EffectDummy (SpellEffIndex effIndex)
                 m_caster->CastSpell(m_caster, 50440, true);
                 break;
             }
+
 
             return;
         }
@@ -1825,27 +1830,34 @@ void Spell::EffectDummy (SpellEffIndex effIndex)
         }
         switch (m_spellInfo->Id)
         {
-        case 1459:          // Arcane Brilliance
-        {
-            if (m_caster->GetTypeId() == TYPEID_PLAYER)
-            {
-                std::list<Unit*> PartyMembers;
-                m_caster->GetPartyMembers(PartyMembers);
-                bool Continue = false;
-                uint32 player = 0;
-                for (std::list<Unit*>::iterator itr = PartyMembers.begin(); itr != PartyMembers.end(); ++itr)          // If caster is in party with a player
+                case 92315: // Pyroblast!
+                    m_caster->RemoveAurasDueToSpell(48108); // Remove hot streak
+                    break;
+                case 30455: // Ice lance
+                    if (Aura* fof = m_caster->GetAura(44544))
+                        AddPctN(damage, 25*fof->GetCharges());
+                    break;
+                case 1459: // Arcane Brilliance
                 {
-                    ++player;
-                    if (Continue == false && player > 1)
-                        Continue = true;
+                    if (m_caster->GetTypeId() == TYPEID_PLAYER)
+                    {
+                        std::list<Unit*> PartyMembers;
+                        m_caster->GetPartyMembers(PartyMembers);
+                        bool Continue = false;
+                        uint32 player = 0;
+                        for (std::list<Unit*>::iterator itr = PartyMembers.begin(); itr != PartyMembers.end(); ++itr) // If caster is in party with a player
+                        {
+                            ++player;
+                            if (Continue == false && player > 1)
+                                Continue = true;
+                        }
+                        if (Continue == true)
+                            m_caster->CastSpell(unitTarget, 79058, true); // Arcane Brilliance (For all)
+                        else
+                            m_caster->CastSpell(unitTarget, 79057, true); // Arcane Brilliance (Only for caster)
                 }
-                if (Continue == true)
-                    m_caster->CastSpell(unitTarget, 79058, true);          // Arcane Brilliance (For all)
-                else
-                    m_caster->CastSpell(unitTarget, 79057, true);          // Arcane Brilliance (Only for caster)
+                break;
             }
-            break;
-        }
         case 42955:          // Conjure Refreshment
         {
             if (m_caster->getLevel() > 33 && m_caster->getLevel() < 44)
@@ -1912,6 +1924,33 @@ void Spell::EffectDummy (SpellEffIndex effIndex)
             m_caster->CastCustomSpell(unitTarget, 50782, &bp0, NULL, NULL, true, 0);
             return;
         }
+            // Execute
+            if (m_spellInfo->SpellFamilyFlags[EFFECT_0] & SPELLFAMILYFLAG_WARRIOR_EXECUTE)
+            {
+                if (!unitTarget)
+                    return;
+
+                spell_id = 20647;
+
+                int32 rageUsed = std::min<int32>(300 - m_powerCost, m_caster->GetPower(POWER_RAGE));
+                int32 newRage = std::max<int32>(0, m_caster->GetPower(POWER_RAGE) - rageUsed);
+
+                // Sudden Death rage save
+                if (AuraEffect * aurEff = m_caster->GetAuraEffect(SPELL_AURA_PROC_TRIGGER_SPELL, SPELLFAMILY_GENERIC, 1989, EFFECT_0))
+                {
+                    int32 ragesave = SpellMgr::CalculateSpellEffectAmount(aurEff->GetSpellProto(), EFFECT_1) * 10;
+                    newRage = std::max(newRage, ragesave);
+                }
+
+                m_caster->SetPower(POWER_RAGE, uint32(newRage));
+
+                // Glyph of Execution bonus
+                if (AuraEffect * aurEff = m_caster->GetAuraEffect(58367, EFFECT_0))
+                    rageUsed += aurEff->GetAmount() * 10;
+
+                bp = damage + int32(rageUsed * m_spellInfo->EffectDamageMultiplier[effIndex] + m_caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.2f);
+                break;
+            }
         // Concussion Blow
         if (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_WARRIOR_CONCUSSION_BLOW)
         {
@@ -4073,6 +4112,7 @@ void Spell::EffectSummonType (SpellEffIndex effIndex)
                 if (!summon)
                     continue;
 
+
                 if (properties->Category == SUMMON_CATEGORY_ALLY)
                 {
                     summon->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_originalCaster->GetGUID());
@@ -5184,6 +5224,7 @@ void Spell::SpellDamageWeaponDmg (SpellEffIndex effIndex)
         {
             // Annihilation
             if (AuraEffect const * aurEff = m_caster->GetDummyAuraEffect(SPELLFAMILY_DEATHKNIGHT, 2710, EFFECT_0))
+
 
                 totalDamagePercentMod *= ((SpellMgr::CalculateSpellEffectAmount(m_spellInfo, EFFECT_2) * unitTarget->GetDiseasesByCaster(m_caster->GetGUID()) / 2.0f) + 100.0f) / 100.0f;
             break;
