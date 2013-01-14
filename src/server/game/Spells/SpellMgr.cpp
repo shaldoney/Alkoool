@@ -4079,9 +4079,8 @@ void SpellMgr::LoadSpellCustomAttr ()
             break;
 			
         case 86452:          // Radiance sacrée
-			spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ALLY_SRC;
-			spellInfo->EffectRadiusIndex[0] = 9;
-			spellInfo->EffectRadiusMaxIndex[0] =9;
+			spellInfo->EffectRadiusIndex[0] = 14;
+			spellInfo->EffectRadiusMaxIndex[0] =14;
            count++;
            break;
         case 82327:          // Holy Radiance 
@@ -4090,8 +4089,24 @@ void SpellMgr::LoadSpellCustomAttr ()
 			spellInfo->EffectRadiusIndex[0] = 13;
            count++;
            break;
-		 case 54785: // Bond démoniaque
+		case 54785: // Bond démoniaque
 			spellInfo->Stances = 1 << (FORM_METAMORPHOSIS - 1);
+           count++;
+           break; 
+		case 86041: // Main de Gul'dan
+			spellInfo->EffectImplicitTargetA[0] = 53;
+			spellInfo->EffectRadiusIndex[0] = 9;
+			spellInfo->EffectMiscValue[0] =46157;
+			spellInfo->EffectMiscValueB[0] =3002;
+           count++;
+           break;
+		 case 93974: // Aura de pressentiment (Rang 1)
+		 case 93975: // Aura de pressentiment (Rang 2)
+			spellInfo->EffectApplyAuraName[0] = SPELL_AURA_MOD_ROOT;
+			spellInfo->EffectRadiusIndex[0] = 26;
+			spellInfo->EffectMiscValue[0] =46157;
+			spellInfo->EffectMiscValueB[0] =3002;
+			spellInfo->EffectMechanic[0] =7;
            count++;
            break; 
 		 case 50589: // Immo

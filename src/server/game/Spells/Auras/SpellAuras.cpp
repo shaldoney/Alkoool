@@ -1125,6 +1125,15 @@ void Aura::HandleAuraSpecificMods (AuraApplication const* aurApp, Unit* caster, 
                         target->RemoveAurasByType(SPELL_AURA_PERIODIC_LEECH);
                     }
                 break;
+
+
+			case 71521:			//Hand of Gul'dan
+	
+				if (caster->HasAura(89605))          // Aura de pressentiment (Rang 1)
+					{
+						caster->CastSpell(target,93974,true);
+					}
+				break;
             case 48020:          // Demonic Circle
                 if (target->GetTypeId() == TYPEID_PLAYER)
                     if (GameObject* obj = caster->GetGameObject(48018))
